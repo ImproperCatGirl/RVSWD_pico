@@ -50,7 +50,7 @@ static uint8_t const ch32v20x_readmem[] = {0x88, 0x41, 0x02, 0x90};
 static uint8_t const ch32v20x_writemem[] = {0x88, 0xc1, 0x02, 0x90};
 
 
-#define PULL_HELPER_PIN 15
+#define PULL_HELPER_PIN 14
 
 #define LOGIC_ANALYZER_HELPER_PIN 10
 
@@ -72,7 +72,7 @@ int main()
     stdio_init_all();
     printf("fuck WCH\n");
     timer_hw->dbgpause = 0;
-    rvswd_handle_t wch_handle_type0 = {.swclk = 16, .swdio = 14};
+    rvswd_handle_t wch_handle_type0 = {.swclk = 16, .swdio = 15};
 
     gpio_init(PULL_HELPER_PIN);
     gpio_set_function(PULL_HELPER_PIN, GPIO_FUNC_SIO);
@@ -84,7 +84,10 @@ int main()
     gpio_set_dir(LOGIC_ANALYZER_HELPER_PIN, GPIO_OUT);
     gpio_put(LOGIC_ANALYZER_HELPER_PIN, 0);
 
-    /*rvswd_init(&wch_handle_type0);
+
+    uint32_t data0_val = 0;
+    rvswd_init(&wch_handle_type0);
+    wch_handle_type0.logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN;
     rvswd_reset(&wch_handle_type0);
 
     rvswd_write(&wch_handle_type0, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
@@ -110,7 +113,6 @@ int main()
         //vTaskDelay(pdMS_TO_TICKS(10));
     }
     sleep_ms(100);
-    uint32_t data0_val = 0;
     for(int i = 0; i < 2; i++)
     {
         uint32_t value = 0xAA;
@@ -128,19 +130,19 @@ int main()
 
         data0_val++;
         sleep_ms(500);
-    }*/
-    uint32_t data0_val = 0;
+    }
     printf("PIO mode test\n");
-    rvswd_handle_t wch_handle_pio = {.swclk = 16, .swdio = 14};
+    rvswd_handle_t wch_handle_pio = {.swclk = 16, .swdio = 15 , .logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN};
     rvswd_pio_init(&wch_handle_pio);
-    rvswd_pio_reset(&wch_handle_pio);
+    /*rvswd_pio_reset(&wch_handle_pio);
 
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
-    rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000003);  // Initiate a core reset request
+    rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000003);  // Initiate a core reset request*/
     while(1)
     {
+        //rvswd_pio_reset(&wch_handle_pio);
         uint32_t value = 0xAA;
         rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_DMSTATUS, &value);
         printf("DMSTATUS = %04X\n", value);

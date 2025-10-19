@@ -46,9 +46,12 @@ static void rvswd_send_cmd(rvswd_handle_t* handle, uint cmd_offset, uint bit_cou
     // For counts 0-256, the value is 0-255 (count-1)
     uint count_val = (bit_count == 0) ? 0 : (bit_count - 1);
     cmd_offset += handle->pio_offset;
-    uint32_t cmd = ((count_val) & 0xff) |
+    /*uint32_t cmd = ((count_val) & 0xff) |
                    ((uint)out_en << 8) |
-                   (cmd_offset << 9);
+                   (cmd_offset << 9);*/
+    uint32_t cmd = ((uint32_t)count_val << 24) | // Bits 31:24
+                   ((uint32_t)out_en << 23) |   // Bit 23
+                   ((uint32_t)cmd_offset << 18); // Bits 22:18
     //printf("CMD = %08X (offset=%u, bit_count=%u, out_en=%d)\n", cmd, cmd_offset, bit_count, out_en);
     pio_sm_put_blocking(handle->pio, handle->sm, cmd);
 }
@@ -58,11 +61,16 @@ static void rvswd_send_cmd(rvswd_handle_t* handle, uint cmd_offset, uint bit_cou
  */
 static void rvswd_pio_write_bits(rvswd_handle_t* handle, uint32_t data, uint8_t bit_count) {
     // Send INVERTED data for open-drain emulation
+    pio_interrupt_clear(handle->pio, 0);
+    // Left-align data since PIO shifts MSB-first (shift_left=true)
+    if (bit_count < 32)
+        data <<= (32 - bit_count);
 
     //printf("TX FIFO level before cmd: %u\n", pio_sm_get_tx_fifo_level(handle->pio, handle->sm));
     rvswd_send_cmd(handle, rvswd_io_offset_write_bits, bit_count, true);
-    pio_sm_put_blocking(handle->pio, handle->sm, ~data);
-    while (!pio_interrupt_get(handle->pio, 0));
+    //pio_sm_put_blocking(handle->pio, handle->sm, ~data);
+    pio_sm_put_blocking(handle->pio, handle->sm, data);
+    //while (!pio_interrupt_get(handle->pio, 0));
     //printf("write bits PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
 }
 
@@ -70,16 +78,19 @@ static void rvswd_pio_write_bits(rvswd_handle_t* handle, uint32_t data, uint8_t 
  * @brief Read N bits using PIO (max 32).
  */
 static uint32_t rvswd_pio_read_bits(rvswd_handle_t* handle, uint8_t bit_count) {
+
+    pio_interrupt_clear(handle->pio, 1);
+
     rvswd_send_cmd(handle, rvswd_io_offset_read_bits, bit_count, false);
-    while (!pio_interrupt_get(handle->pio, 1));
+    //while (!pio_interrupt_get(handle->pio, 1));
     uint32_t data = pio_sm_get_blocking(handle->pio, handle->sm);
     //printf("read bits PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
     /// The PIO shifts data in from the LSB (since we set shift_left=false).
     // We must shift it LEFT to MSB-align it.
-    if (bit_count < 32) {
+    /*if (bit_count < 32) {
         // return data >> (32 - bit_count); // OLD BUG
         return data << (32 - bit_count); // NEW FIX
-    }
+    }*/
     return data;
 }
 
@@ -93,12 +104,12 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 
     gpio_init(handle->swclk);
     gpio_set_function(handle->swclk, GPIO_FUNC_PIO0);
-    gpio_set_dir(handle->swclk, GPIO_OUT);
+    //gpio_set_dir(handle->swclk, GPIO_OUT);
     
 
     gpio_set_function(handle->swdio, GPIO_FUNC_PIO0);
     gpio_set_pulls(handle->swdio, true, false);       // Internal pull-up (~50kΩ)
-    gpio_set_dir(handle->swdio, GPIO_IN); //Hi-Z at init
+    //gpio_set_dir(handle->swdio, GPIO_IN); //Hi-Z at init
 
     // 1. Claim PIO resources
     handle->pio = pio0; // Or pio1
@@ -121,7 +132,7 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 
     // FIFO configuration
     // We want MSB-first, so shift_right=false
-    sm_config_set_out_shift(&c, true, false, 32);
+    sm_config_set_out_shift(&c, false, false, 32);
     sm_config_set_in_shift(&c, false, false, 32);
 
     // 4. Initialize GPIOs for PIO
@@ -132,9 +143,9 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
     
     // 5. Set initial pin states for PIO
     // 'out' value is always 0 (for driving low)
-    pio_sm_set_out_pins(handle->pio, handle->sm, handle->swdio, 1);
+    //pio_sm_set_out_pins(handle->pio, handle->sm, handle->swdio, 1);
     // 'pindir' is 0 (input) initially
-    pio_sm_set_consecutive_pindirs(handle->pio, handle->sm, handle->swdio, 1, false);
+    pio_sm_set_consecutive_pindirs(handle->pio, handle->sm, handle->swdio, 1, true);
     // 'swclk' is an output
     pio_sm_set_consecutive_pindirs(handle->pio, handle->sm, handle->swclk, 1, true);
 
@@ -150,14 +161,20 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
  
 // The bit-bang functions are now just PIO commands
 rvswd_result_t rvswd_pio_start(rvswd_handle_t* handle) {
+
+    gpio_put(handle->logic_helper_pin, 1);
     rvswd_send_cmd(handle, rvswd_io_offset_start, 0, true);
     
+    gpio_put(handle->logic_helper_pin, 0);
     return RVSWD_OK;
 }
  
 rvswd_result_t rvswd_pio_stop(rvswd_handle_t* handle) {
+
+    gpio_put(handle->logic_helper_pin, 1);
     rvswd_send_cmd(handle, rvswd_io_offset_stop, 0, true);
     
+    gpio_put(handle->logic_helper_pin, 0);
     return RVSWD_OK;
 }
  
@@ -195,7 +212,7 @@ rvswd_result_t rvswd_pio_write(rvswd_handle_t* handle, uint8_t reg, uint32_t val
     rvswd_pio_write_bits(handle, packet, 9);
  
     // Turnaround (5 bits)
-    rvswd_pio_write_bits(handle, 0b01010, 5);
+    rvswd_pio_write_bits(handle, 0b10101, 5);
  
     // Data (32 bits)
     parity = false;
@@ -208,7 +225,7 @@ rvswd_result_t rvswd_pio_write(rvswd_handle_t* handle, uint8_t reg, uint32_t val
     rvswd_pio_write_bits(handle, (parity ? 1 : 0), 1);
  
     // Trailer (5 bits)
-    rvswd_pio_write_bits(handle, 0b11101, 5);
+    rvswd_pio_write_bits(handle, 0b10111, 5);
  
     rvswd_pio_stop(handle);
  
@@ -236,7 +253,7 @@ rvswd_result_t rvswd_pio_read(rvswd_handle_t* handle, uint8_t reg, uint32_t* val
     rvswd_pio_write_bits(handle, packet, 9);
 
     // Turnaround (5 bits)
-    rvswd_pio_write_bits(handle, 0b01010, 5);
+    rvswd_pio_write_bits(handle, 0b10101, 5);
  
     // Data (32 bits)
     *value = rvswd_pio_read_bits(handle, 32);
@@ -245,7 +262,7 @@ rvswd_result_t rvswd_pio_read(rvswd_handle_t* handle, uint8_t reg, uint32_t* val
     bool parity_read = (rvswd_pio_read_bits(handle, 1) & 1);
 
     // Trailer (5 bits)
-    rvswd_pio_write_bits(handle, 0b11101, 5);
+    rvswd_pio_write_bits(handle, 0b10111, 5);
  
     rvswd_pio_stop(handle);
  

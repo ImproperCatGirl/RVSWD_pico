@@ -17,6 +17,7 @@
     PIO pio;
     uint sm;
     uint pio_offset; // Program offset
+    uint logic_helper_pin;
  } rvswd_handle_t;
  
  typedef enum rvswd_result {

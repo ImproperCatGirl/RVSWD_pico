@@ -150,8 +150,9 @@
  
  rvswd_result_t rvswd_read(rvswd_handle_t* handle, uint8_t reg, uint32_t* value) {
      bool parity;
- 
+     gpio_put(handle->logic_helper_pin, 1);
      rvswd_start(handle);
+     gpio_put(handle->logic_helper_pin, 0);
  
      // ADDR HOST
      parity = false;
@@ -194,7 +195,9 @@
      rvswd_write_bit(handle, 1);
      rvswd_write_bit(handle, 1);
  
+     gpio_put(handle->logic_helper_pin, 1);
      rvswd_stop(handle);
  
+     gpio_put(handle->logic_helper_pin, 0);
      return (parity == parity_read) ? RVSWD_OK : RVSWD_FAIL;
  }

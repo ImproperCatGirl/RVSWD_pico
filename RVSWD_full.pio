@@ -32,15 +32,13 @@ public get_next_cmd:
 ; X-reg = bit count-1
 ; 'Dir' bit must be 1 (write)
 public write_bits:
-    pull               ; Get data word (CPU must send ~data)
-    mov pins, null      ; Set output pin to 0 (for drive-low)
+    pull               ; 
+    set pindirs, 1
 write_bitloop:
-    ; OSR bit '1' (from ~0) -> pindir=1 (OUT), drives line LOW
-    ; OSR bit '0' (from ~1) -> pindir=0 (IN), line is pulled HIGH
-    out pindirs, 1  side 0 [BIT_DELAY] ; CLK=0. Set dir from OSR bit
+    out pins, 1  side 0 [BIT_DELAY] ; CLK=0. Send data
     nop             side 1 [BIT_DELAY] ; CLK=1. Hold.
     jmp x-- write_bitloop
-    irq 0
+    ;irq 0
     jmp get_next_cmd
 ; Fall through to get_next_cmd
 
@@ -48,34 +46,36 @@ write_bitloop:
 ; X-reg = bit count-1
 ; 'Dir' bit must be 0 (read)
 read_bitloop_entry:
-    nop                 ; 
+    set pindirs, 0 side 1       ; 
 public read_bits:
-    set pindirs, 0  side 0 [BIT_DELAY] ; 
+    nop  side 0 [BIT_DELAY] ; 
     in pins, 1      side 1 [BIT_DELAY] ; 
-    jmp x-- read_bitloop_entry         ; 
+    jmp x-- read_bits         ; 
     push            ; 
-    irq 1
+    ;irq 1
     jmp get_next_cmd
 
 ; --- Special Sequences ---
 ; These ignore X-reg and Dir bit
 public start:
-    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H, CLK=H, wait 1us
-    set pindirs, 0  side 1 [DELAY_1US] ; wait 1us (total 2us)
-    set pindirs, 1  side 1 [DELAY_1US] ; SWDIO=L, CLK=H, wait 1us
+    set pindirs, 1
+    set pins, 1  side 1 [DELAY_1US] ; SWDIO=H, CLK=H, wait 1us
+    set pins, 0  side 1 [DELAY_1US] ; SWDIO=L, CLK=H, wait 1us
     nop             side 0 [DELAY_1US] ; SWDIO=L, CLK=L, wait 1us
     jmp get_next_cmd
 ; Fall through to get_next_cmd
 
-public stop:
-    set pindirs, 1  side 1 [DELAY_1US] ; SWDIO=L, CLK=H, wait 1us
-    set pindirs, 1  side 1 [DELAY_1US] ; wait 1us (total 2us)
-    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H, CLK=H, wait 1us
+public stop: 
+    set pindirs, 1
+    set pins, 0  side 1 [DELAY_1US] ; SWDIO=L, CLK=H, wait 1us
+    set pins, 1  side 1 [DELAY_1US] ; SWDIO=H, CLK=H, wait 1us
+    set pindirs, 0
     jmp get_next_cmd
 ; Fall through to get_next_cmd
 
 public reset:
-    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H
+    set pindirs, 1
+    set pins, 1  side 1 [DELAY_1US] ; SWDIO=H
 reset_loop:
     nop             side 0 [DELAY_1US]
     nop             side 1 [DELAY_1US]
