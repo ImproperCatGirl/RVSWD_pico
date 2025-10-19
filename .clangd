@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - -isystem
+    - /home/meow/arm_toolchain/arm-none-eabi/include/

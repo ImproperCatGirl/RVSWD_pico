@@ -1,0 +1,413 @@
+{
+  "pWriteData": {
+    "calls": [
+      "if",
+      "jtag_libusb_bulk_write"
+    ],
+    "refs": []
+  },
+  "pReadData": {
+    "calls": [
+      "if",
+      "jtag_libusb_bulk_read"
+    ],
+    "refs": []
+  },
+  "wlink_ramcodewrite": {
+    "calls": [
+      "if",
+      "pWriteData",
+      "while"
+    ],
+    "refs": []
+  },
+  "wlink_getromram": {
+    "calls": [
+      "if",
+      "pReadData",
+      "pWriteData",
+      "switch"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "switch": {
+    "calls": [
+      "LOG_WARNING"
+    ],
+    "refs": [
+      "txbuf"
+    ]
+  },
+  "if": {
+    "calls": [],
+    "refs": []
+  },
+  "DMI_OP": {
+    "calls": [
+      "if",
+      "memset",
+      "pReadData",
+      "pWriteData",
+      "readmcause",
+      "sizeof"
+    ],
+    "refs": [
+      "Rxbuf",
+      "Txbuf"
+    ]
+  },
+  "wlink_reset": {
+    "calls": [
+      "DMI_OP",
+      "pReadData",
+      "pWriteData",
+      "usleep"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_quitreset": {
+    "calls": [
+      "DMI_OP",
+      "pReadData",
+      "pWriteData",
+      "usleep"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_softreset": {
+    "calls": [
+      "pReadData",
+      "pWriteData",
+      "usleep"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_clean": {
+    "calls": [
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_chip_reset": {
+    "calls": [
+      "DMI_OP",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlnik_protect_check": {
+    "calls": [
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_flash_protect": {
+    "calls": [
+      "if",
+      "pReadData",
+      "pWriteData",
+      "usleep",
+      "wlink_reset",
+      "wlnik_protect_check"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_ready_write": {
+    "calls": [
+      "if",
+      "pReadData",
+      "pWriteData",
+      "sizeof",
+      "switch",
+      "wlink_ramcodewrite"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_endprogram": {
+    "calls": [
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_fastprogram": {
+    "calls": [
+      "for",
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf"
+    ]
+  },
+  "for": {
+    "calls": [],
+    "refs": [
+      "buf_bin"
+    ]
+  },
+  "WriteNonFullPage": {
+    "calls": [
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_erase": {
+    "calls": [
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "readmcause": {
+    "calls": [
+      "DMI_OP"
+    ],
+    "refs": []
+  },
+  "wlink_endprocess": {
+    "calls": [
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_chip": {
+    "calls": [
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_pow3v3": {
+    "calls": [
+      "LOG_ERROR",
+      "LOG_INFO",
+      "exit",
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_pow5v": {
+    "calls": [
+      "LOG_ERROR",
+      "LOG_INFO",
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_rstout": {
+    "calls": [
+      "LOG_ERROR",
+      "LOG_INFO",
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_sdi": {
+    "calls": [
+      "LOG_ERROR",
+      "LOG_INFO",
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_code_erase": {
+    "calls": [
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_init": {
+    "calls": [
+      "FreeLibrary",
+      "GetProcAddress",
+      "GetVersionEx",
+      "LOG_ERROR",
+      "LOG_INFO",
+      "LOG_WARNING",
+      "LoadLibrary",
+      "exit",
+      "if",
+      "jtag_libusb_close",
+      "jtag_libusb_open",
+      "jtag_libusb_set_configuration",
+      "libusb_claim_interface",
+      "pCloseDev",
+      "pOpenDev",
+      "pReadData",
+      "pSetTimeout",
+      "pWriteData",
+      "switch",
+      "usleep",
+      "wlink_code_erase",
+      "wlink_endprocess",
+      "wlink_pow3v3",
+      "wlink_pow5v",
+      "wlink_quit",
+      "wlink_rstout",
+      "wlink_sdi"
+    ],
+    "refs": [
+      "contact",
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_quit": {
+    "calls": [
+      "FreeLibrary",
+      "if",
+      "jtag_libusb_close",
+      "pCloseDev",
+      "wlink_endprocess"
+    ],
+    "refs": []
+  },
+  "wlink_disabledebug": {
+    "calls": [
+      "if",
+      "pReadData",
+      "pWriteData"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_write": {
+    "calls": [
+      "for",
+      "if",
+      "malloc",
+      "memset",
+      "while",
+      "wlink_endprogram",
+      "wlink_fastprogram",
+      "wlink_ready_write"
+    ],
+    "refs": [
+      "buf_bin"
+    ]
+  },
+  "while": {
+    "calls": [
+      "for",
+      "if",
+      "wlink_fastprogram"
+    ],
+    "refs": [
+      "buf_bin"
+    ]
+  },
+  "wlink_speed": {
+    "calls": [
+      "LOG_WARNING",
+      "if",
+      "pReadData",
+      "pWriteData",
+      "switch"
+    ],
+    "refs": [
+      "rxbuf",
+      "txbuf"
+    ]
+  },
+  "wlink_speed_div": {
+    "calls": [],
+    "refs": []
+  },
+  "wlink_khz": {
+    "calls": [],
+    "refs": []
+  },
+  "getchip": {
+    "calls": [
+      "LOG_ERROR",
+      "if",
+      "strcmp"
+    ],
+    "refs": []
+  },
+  "COMMAND_HANDLER": {
+    "calls": [
+      "COMMAND_PARSE_ON_OFF"
+    ],
+    "refs": [
+      "CMD_ARGV"
+    ]
+  }
+}

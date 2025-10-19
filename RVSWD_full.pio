@@ -1,0 +1,85 @@
+;
+; RVSWD PIO Program (Command-Driven)
+;
+; - Stays active, no GPIO/PIO mode switching.
+; - Implements RVSWD open-drain (drive-low / input-high).
+; - Uses picoprobe-style command dispatcher.
+; - Handles special 'start', 'stop', and 'reset' sequences.
+;
+
+.program rvswd_io
+.side_set 1 opt
+
+; --- PIO Clocking Delays ---
+; Original BIT_DELAY_US = 2. 
+; For a 10MHz PIO clock (100ns/cycle):
+; 2us / 100ns = 20 cycles. Instruction takes 1, delay 19.
+.define public BIT_DELAY 7
+; 1us delay for start/stop sequences
+.define public DELAY_1US 7
+
+; --- Command Dispatcher (Entry Point) ---
+; Waits here for a command from the CPU
+.wrap_target
+public get_next_cmd:
+    pull                side 1 ; Pull command, CLK idle high
+    ; Command format: | 13:9 (Cmd Addr) | 8 (Dir) | 7:0 (Count-1) |
+    out x, 8            ; Get bit count (X)
+    out pindirs, 1      ; Get direction (1=write, 0=read)
+    out pc, 5           ; Jump to command address
+        
+; --- Write Bits (Open Drain) ---
+; X-reg = bit count-1
+; 'Dir' bit must be 1 (write)
+public write_bits:
+    pull               ; Get data word (CPU must send ~data)
+    mov pins, null      ; Set output pin to 0 (for drive-low)
+write_bitloop:
+    ; OSR bit '1' (from ~0) -> pindir=1 (OUT), drives line LOW
+    ; OSR bit '0' (from ~1) -> pindir=0 (IN), line is pulled HIGH
+    out pindirs, 1  side 0 [BIT_DELAY] ; CLK=0. Set dir from OSR bit
+    nop             side 1 [BIT_DELAY] ; CLK=1. Hold.
+    jmp x-- write_bitloop
+    jmp get_next_cmd
+; Fall through to get_next_cmd
+
+; --- Read Bits ---
+; X-reg = bit count-1
+; 'Dir' bit must be 0 (read)
+read_bitloop_entry:
+    nop                 ; 
+public read_bits:
+    set pindirs, 0  side 0 [BIT_DELAY] ; 
+    in pins, 1      side 1 [BIT_DELAY] ; 
+    push            ; Debug: push ISR after each bit
+    jmp x-- read_bitloop_entry         ; 
+    push            ; PC=13
+    jmp get_next_cmd                   ; 
+
+; --- Special Sequences ---
+; These ignore X-reg and Dir bit
+public start:
+    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H, CLK=H, wait 1us
+    set pindirs, 0  side 1 [DELAY_1US] ; wait 1us (total 2us)
+    set pindirs, 1  side 1 [DELAY_1US] ; SWDIO=L, CLK=H, wait 1us
+    nop             side 0 [DELAY_1US] ; SWDIO=L, CLK=L, wait 1us
+    jmp get_next_cmd
+; Fall through to get_next_cmd
+
+public stop:
+    set pindirs, 1  side 1 [DELAY_1US] ; SWDIO=L, CLK=H, wait 1us
+    set pindirs, 1  side 1 [DELAY_1US] ; wait 1us (total 2us)
+    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H, CLK=H, wait 1us
+    jmp get_next_cmd
+; Fall through to get_next_cmd
+
+;public reset:
+;    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H
+;    mov x, 99           ; 100 loops
+;reset_loop:
+;    nop             side 0 [DELAY_1US]
+;    nop             side 1 [DELAY_1US]
+;    jmp x-- reset_loop
+;    jmp stop            ; Jump to stop sequence
+; 'stop' will fall through to get_next_cmd
+.wrap

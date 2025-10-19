@@ -1,0 +1,12 @@
+*.cmake
+.cache
+.vscode
+CMakeFiles
+generated
+pico-sdk
+build
+*.uf2
+*.elf
+*.dis
+*.map
+*.hex

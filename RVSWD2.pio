@@ -1,0 +1,41 @@
+;
+; Corrected PIO program for RVSWD protocol
+;
+
+.program rvswd_io
+.side_set 1 opt     ; Make side-set optional.
+
+.define public CLK_DELAY 7 ; max delay = 7 when using side_set
+
+public write_bits:
+    ;Set 'out' pin group value to 0 (drive low)
+    ; 'null' is an all-zero source. 'pins' is the 'out' group.
+    mov pins, null
+    
+    pull block          ; Get bit count (N-1) from CPU
+    mov x, osr          ; Store bit count in X
+    pull block          ; Get data word from CPU
+do_write:
+    ; OSR bit '1' (from ~0) -> pindir=1 (OUT), drives line LOW (from 'mov pins, null')
+    ; OSR bit '0' (from ~1) -> pindir=0 (IN), line is pulled HIGH
+    out pindirs, 1  side 0 [CLK_DELAY]  ; CLK=0. Set swdio dir
+    nop             side 1 [CLK_DELAY]  ; CLK=1. Hold.
+    jmp x-- do_write                    ; Loop X+1 times
+    
+    ;Set CLK high (idle) and signal CPU
+    irq 0           side 1
+    jmp write_bits      ; Wait for next write command
+
+public read_bits:
+    pull block          ; Get bit count (N-1) from CPU
+    mov y, osr          ; Store bit count in Y
+do_read:
+    set pindirs, 0  side 0 [CLK_DELAY]  ; CLK=0. Set swdio to input
+    in pins, 1      side 1 [CLK_DELAY]  ; CLK=1. Sample swdio
+    jmp y-- do_read                     ; Loop Y+1 times
+    
+    push                ; Push read data (ISR) to RX FIFO
+    
+    ;Set CLK high (idle) and signal CPU
+    irq 1           side 1
+    jmp write_bits      ; Default back to write mode
