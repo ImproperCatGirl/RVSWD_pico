@@ -17,13 +17,6 @@
     PIO pio;
     uint sm;
     uint pio_offset; // Program offset
-    
-    // Command offsets (cached)
-    uint offset_write_bits;
-    uint offset_read_bits;
-    uint offset_start;
-    uint offset_stop;
-    uint offset_reset;
  } rvswd_handle_t;
  
  typedef enum rvswd_result {
@@ -49,6 +42,7 @@ rvswd_result_t rvswd_pio_start(rvswd_handle_t* handle);
 rvswd_result_t rvswd_pio_stop(rvswd_handle_t* handle);
 
 
+rvswd_result_t rvswd_pio_reset(rvswd_handle_t* handle);
 rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle);
 
 rvswd_result_t rvswd_pio_write(rvswd_handle_t* handle, uint8_t reg, uint32_t value);

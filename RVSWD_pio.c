@@ -8,6 +8,7 @@
 #include "rvswd.h"
 #include <inttypes.h>
 #include <pico/time.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include "hardware/gpio.h"
@@ -17,11 +18,20 @@
 
 // PIO clock frequency (e.g., 10 MHz). 
 // This gives 100ns resolution for delays.
-#define PIO_CLK_HZ 10000000.0f
+#define PIO_CLK_HZ 5000000.0f
 
 //
 // --- PIO Helper Functions ---
 //
+
+// Reverses endianness for a 32-bit unsigned integer
+uint32_t reverse_endian_32(uint32_t val) {
+    return ((val & 0x000000FF) << 24) |
+           ((val & 0x0000FF00) << 8)  |
+           ((val & 0x00FF0000) >> 8)  |
+           ((val & 0xFF000000) >> 24);
+}
+
 
 /**
  * @brief Formats and sends a command word to the PIO.
@@ -34,13 +44,12 @@
  */
 static void rvswd_send_cmd(rvswd_handle_t* handle, uint cmd_offset, uint bit_count, bool out_en) {
     // For counts 0-256, the value is 0-255 (count-1)
-    uint32_t count_val = (bit_count == 0) ? 0 : (bit_count - 1);
-
-    /*uint32_t cmd = ((count_val) & 0xff) |
+    uint count_val = (bit_count == 0) ? 0 : (bit_count - 1);
+    cmd_offset += handle->pio_offset;
+    uint32_t cmd = ((count_val) & 0xff) |
                    ((uint)out_en << 8) |
-                   (cmd_offset << 9);*/
-    uint32_t cmd = ((uint32_t)count_val << 24) | ((uint32_t)out_en << 23) | ((uint32_t)cmd_offset << 18);
-    printf("CMD = %08X (offset=%u, bit_count=%u, out_en=%d)\n", cmd, cmd_offset, bit_count, out_en);
+                   (cmd_offset << 9);
+    //printf("CMD = %08X (offset=%u, bit_count=%u, out_en=%d)\n", cmd, cmd_offset, bit_count, out_en);
     pio_sm_put_blocking(handle->pio, handle->sm, cmd);
 }
 
@@ -50,25 +59,26 @@ static void rvswd_send_cmd(rvswd_handle_t* handle, uint cmd_offset, uint bit_cou
 static void rvswd_pio_write_bits(rvswd_handle_t* handle, uint32_t data, uint8_t bit_count) {
     // Send INVERTED data for open-drain emulation
 
-    printf("TX FIFO level before cmd: %u\n", pio_sm_get_tx_fifo_level(handle->pio, handle->sm));
-    rvswd_send_cmd(handle, handle->offset_write_bits, bit_count, true);
+    //printf("TX FIFO level before cmd: %u\n", pio_sm_get_tx_fifo_level(handle->pio, handle->sm));
+    rvswd_send_cmd(handle, rvswd_io_offset_write_bits, bit_count, true);
     pio_sm_put_blocking(handle->pio, handle->sm, ~data);
-    printf("write bits PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
+    while (!pio_interrupt_get(handle->pio, 0));
+    //printf("write bits PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
 }
 
 /**
  * @brief Read N bits using PIO (max 32).
  */
 static uint32_t rvswd_pio_read_bits(rvswd_handle_t* handle, uint8_t bit_count) {
-    rvswd_send_cmd(handle, handle->offset_read_bits, bit_count, false);
-    printf("RX FIFO after CMD: %08X\n", pio_sm_get_rx_fifo_level(handle->pio, handle->sm) );
-    printf("read bits PC before get = %d\n", pio_sm_get_pc(pio0, handle->sm));
+    rvswd_send_cmd(handle, rvswd_io_offset_read_bits, bit_count, false);
+    while (!pio_interrupt_get(handle->pio, 1));
     uint32_t data = pio_sm_get_blocking(handle->pio, handle->sm);
-    printf("read bits PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
-    // The PIO shifts data into the LSB. We shift it up to be
-    // MSB-aligned to match the original bit-bang code's logic.
+    //printf("read bits PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
+    /// The PIO shifts data in from the LSB (since we set shift_left=false).
+    // We must shift it LEFT to MSB-align it.
     if (bit_count < 32) {
-        return data >> (32 - bit_count);
+        // return data >> (32 - bit_count); // OLD BUG
+        return data << (32 - bit_count); // NEW FIX
     }
     return data;
 }
@@ -95,13 +105,6 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
     handle->sm = pio_claim_unused_sm(handle->pio, true);
     handle->pio_offset = pio_add_program(handle->pio, &rvswd_io_program);
 
-    // 2. Cache the command label offsets
-    handle->offset_write_bits = rvswd_io_offset_write_bits;
-    handle->offset_read_bits = rvswd_io_offset_read_bits;
-    handle->offset_start = rvswd_io_offset_start;
-    handle->offset_stop = rvswd_io_offset_stop;
-    printf("offset_write_bits = %d\n", handle->offset_write_bits);
-    //handle->offset_reset = pio_get_public_label(&rvswd_io_program, "reset");
 
     // 3. Configure the state machine
     pio_sm_config c = rvswd_io_program_get_default_config(handle->pio_offset);
@@ -118,7 +121,7 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 
     // FIFO configuration
     // We want MSB-first, so shift_right=false
-    sm_config_set_out_shift(&c, false, false, 32);
+    sm_config_set_out_shift(&c, true, false, 32);
     sm_config_set_in_shift(&c, false, false, 32);
 
     // 4. Initialize GPIOs for PIO
@@ -147,19 +150,19 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
  
 // The bit-bang functions are now just PIO commands
 rvswd_result_t rvswd_pio_start(rvswd_handle_t* handle) {
-    rvswd_send_cmd(handle, handle->offset_start, 0, false);
-    printf("start PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
+    rvswd_send_cmd(handle, rvswd_io_offset_start, 0, true);
+    
     return RVSWD_OK;
 }
  
 rvswd_result_t rvswd_pio_stop(rvswd_handle_t* handle) {
-    rvswd_send_cmd(handle, handle->offset_stop, 0, false);
-    printf("stop PC = %d\n", pio_sm_get_pc(pio0, handle->sm));
+    rvswd_send_cmd(handle, rvswd_io_offset_stop, 0, true);
+    
     return RVSWD_OK;
 }
  
 rvswd_result_t rvswd_pio_reset(rvswd_handle_t* handle) {
-    //rvswd_send_cmd(handle, handle->offset_reset, 0, false);
+    rvswd_send_cmd(handle, rvswd_io_offset_reset, 100, true);
     return RVSWD_OK;
 }
  

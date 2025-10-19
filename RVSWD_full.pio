@@ -40,6 +40,7 @@ write_bitloop:
     out pindirs, 1  side 0 [BIT_DELAY] ; CLK=0. Set dir from OSR bit
     nop             side 1 [BIT_DELAY] ; CLK=1. Hold.
     jmp x-- write_bitloop
+    irq 0
     jmp get_next_cmd
 ; Fall through to get_next_cmd
 
@@ -51,10 +52,10 @@ read_bitloop_entry:
 public read_bits:
     set pindirs, 0  side 0 [BIT_DELAY] ; 
     in pins, 1      side 1 [BIT_DELAY] ; 
-    push            ; Debug: push ISR after each bit
     jmp x-- read_bitloop_entry         ; 
-    push            ; PC=13
-    jmp get_next_cmd                   ; 
+    push            ; 
+    irq 1
+    jmp get_next_cmd
 
 ; --- Special Sequences ---
 ; These ignore X-reg and Dir bit
@@ -73,13 +74,12 @@ public stop:
     jmp get_next_cmd
 ; Fall through to get_next_cmd
 
-;public reset:
-;    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H
-;    mov x, 99           ; 100 loops
-;reset_loop:
-;    nop             side 0 [DELAY_1US]
-;    nop             side 1 [DELAY_1US]
-;    jmp x-- reset_loop
-;    jmp stop            ; Jump to stop sequence
+public reset:
+    set pindirs, 0  side 1 [DELAY_1US] ; SWDIO=H
+reset_loop:
+    nop             side 0 [DELAY_1US]
+    nop             side 1 [DELAY_1US]
+    jmp x-- reset_loop
+    jmp stop            ; Jump to stop sequence
 ; 'stop' will fall through to get_next_cmd
 .wrap
