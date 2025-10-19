@@ -13,7 +13,7 @@
 // -------- //
 
 #define rvswd_io_wrap_target 0
-#define rvswd_io_wrap 31
+#define rvswd_io_wrap 30
 #define rvswd_io_pio_version 0
 
 #define rvswd_io_BIT_DELAY 7
@@ -23,8 +23,8 @@
 #define rvswd_io_offset_write_bits 4u
 #define rvswd_io_offset_read_bits 11u
 #define rvswd_io_offset_start 16u
-#define rvswd_io_offset_stop 21u
-#define rvswd_io_offset_reset 26u
+#define rvswd_io_offset_stop 20u
+#define rvswd_io_offset_reset 25u
 
 static const uint16_t rvswd_io_program_instructions[] = {
             //     .wrap_target
@@ -47,26 +47,25 @@ static const uint16_t rvswd_io_program_instructions[] = {
     0xe081, // 16: set    pindirs, 1
     0xff01, // 17: set    pins, 1         side 1 [7]
     0xff00, // 18: set    pins, 0         side 1 [7]
-    0xb742, // 19: nop                    side 0 [7]
-    0x0000, // 20: jmp    0
-    0xe081, // 21: set    pindirs, 1
-    0xff00, // 22: set    pins, 0         side 1 [7]
-    0xff01, // 23: set    pins, 1         side 1 [7]
-    0xe080, // 24: set    pindirs, 0
-    0x0000, // 25: jmp    0
-    0xe081, // 26: set    pindirs, 1
-    0xff01, // 27: set    pins, 1         side 1 [7]
-    0xb742, // 28: nop                    side 0 [7]
-    0xbf42, // 29: nop                    side 1 [7]
-    0x005c, // 30: jmp    x--, 28
-    0x0015, // 31: jmp    21
+    0x0000, // 19: jmp    0
+    0xe081, // 20: set    pindirs, 1
+    0xff00, // 21: set    pins, 0         side 1 [7]
+    0xff01, // 22: set    pins, 1         side 1 [7]
+    0xe080, // 23: set    pindirs, 0
+    0x0000, // 24: jmp    0
+    0xe081, // 25: set    pindirs, 1
+    0xff01, // 26: set    pins, 1         side 1 [7]
+    0xb742, // 27: nop                    side 0 [7]
+    0xbf42, // 28: nop                    side 1 [7]
+    0x005b, // 29: jmp    x--, 27
+    0x0014, // 30: jmp    20
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program rvswd_io_program = {
     .instructions = rvswd_io_program_instructions,
-    .length = 32,
+    .length = 31,
     .origin = -1,
     .pio_version = rvswd_io_pio_version,
 #if PICO_PIO_VERSION > 0

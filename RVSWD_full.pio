@@ -61,7 +61,7 @@ public start:
     set pindirs, 1
     set pins, 1  side 1 [DELAY_1US] ; SWDIO=H, CLK=H, wait 1us
     set pins, 0  side 1 [DELAY_1US] ; SWDIO=L, CLK=H, wait 1us
-    nop             side 0 [DELAY_1US] ; SWDIO=L, CLK=L, wait 1us
+    ;nop             side 0 [DELAY_1US] ; SWDIO=L, CLK=L, wait 1us
     jmp get_next_cmd
 ; Fall through to get_next_cmd
 
