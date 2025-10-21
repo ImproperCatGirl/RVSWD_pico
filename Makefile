@@ -636,6 +636,54 @@ home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_divider/divider.S.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_divider/divider.S.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_divider/divider.S.o
 
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.o
+
+# target to build an object file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.o
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.i: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.i
+
+# target to preprocess a source file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.i
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.s: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.s
+
+# target to generate assembly for a file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.c.s
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.o
+
+# target to build an object file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.o
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.i: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.i
+
+# target to preprocess a source file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.i
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.s: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.s
+
+# target to generate assembly for a file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.c.s
+
 home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.c.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.o
 
@@ -739,6 +787,30 @@ home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.s: home/meow/.pico
 home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.c.s
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.c.s
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.o
+
+# target to build an object file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.o
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.i: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.i
+
+# target to preprocess a source file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.i
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.s: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.s
+
+# target to generate assembly for a file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.c.s
 
 home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.c.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.o
@@ -1268,6 +1340,30 @@ home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.o
 
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.o
+
+# target to build an object file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.o
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.i: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.i
+
+# target to preprocess a source file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.i
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.s: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.s
+
+# target to generate assembly for a file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.c.s
+
 home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.c.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.o
 
@@ -1532,6 +1628,222 @@ home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_stdlib/stdlib.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_stdlib/stdlib.c.s
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_stdlib/stdlib.c.s
 
+home/meow/FreeRTOS-Kernel/croutine.o: home/meow/FreeRTOS-Kernel/croutine.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/croutine.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/croutine.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/croutine.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/croutine.c.o
+
+home/meow/FreeRTOS-Kernel/croutine.i: home/meow/FreeRTOS-Kernel/croutine.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/croutine.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/croutine.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/croutine.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/croutine.c.i
+
+home/meow/FreeRTOS-Kernel/croutine.s: home/meow/FreeRTOS-Kernel/croutine.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/croutine.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/croutine.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/croutine.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/croutine.c.s
+
+home/meow/FreeRTOS-Kernel/event_groups.o: home/meow/FreeRTOS-Kernel/event_groups.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/event_groups.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/event_groups.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/event_groups.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/event_groups.c.o
+
+home/meow/FreeRTOS-Kernel/event_groups.i: home/meow/FreeRTOS-Kernel/event_groups.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/event_groups.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/event_groups.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/event_groups.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/event_groups.c.i
+
+home/meow/FreeRTOS-Kernel/event_groups.s: home/meow/FreeRTOS-Kernel/event_groups.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/event_groups.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/event_groups.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/event_groups.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/event_groups.c.s
+
+home/meow/FreeRTOS-Kernel/list.o: home/meow/FreeRTOS-Kernel/list.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/list.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/list.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/list.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/list.c.o
+
+home/meow/FreeRTOS-Kernel/list.i: home/meow/FreeRTOS-Kernel/list.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/list.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/list.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/list.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/list.c.i
+
+home/meow/FreeRTOS-Kernel/list.s: home/meow/FreeRTOS-Kernel/list.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/list.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/list.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/list.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/list.c.s
+
+home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.o: home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.o
+
+home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.i: home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.i
+
+home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.s: home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.c.s
+
+home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.o: home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.o
+
+home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.i: home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.i
+
+home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.s: home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.s
+
+home/meow/FreeRTOS-Kernel/queue.o: home/meow/FreeRTOS-Kernel/queue.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/queue.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/queue.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/queue.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/queue.c.o
+
+home/meow/FreeRTOS-Kernel/queue.i: home/meow/FreeRTOS-Kernel/queue.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/queue.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/queue.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/queue.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/queue.c.i
+
+home/meow/FreeRTOS-Kernel/queue.s: home/meow/FreeRTOS-Kernel/queue.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/queue.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/queue.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/queue.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/queue.c.s
+
+home/meow/FreeRTOS-Kernel/stream_buffer.o: home/meow/FreeRTOS-Kernel/stream_buffer.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/stream_buffer.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/stream_buffer.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/stream_buffer.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/stream_buffer.c.o
+
+home/meow/FreeRTOS-Kernel/stream_buffer.i: home/meow/FreeRTOS-Kernel/stream_buffer.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/stream_buffer.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/stream_buffer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/stream_buffer.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/stream_buffer.c.i
+
+home/meow/FreeRTOS-Kernel/stream_buffer.s: home/meow/FreeRTOS-Kernel/stream_buffer.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/stream_buffer.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/stream_buffer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/stream_buffer.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/stream_buffer.c.s
+
+home/meow/FreeRTOS-Kernel/tasks.o: home/meow/FreeRTOS-Kernel/tasks.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/tasks.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/tasks.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/tasks.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/tasks.c.o
+
+home/meow/FreeRTOS-Kernel/tasks.i: home/meow/FreeRTOS-Kernel/tasks.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/tasks.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/tasks.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/tasks.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/tasks.c.i
+
+home/meow/FreeRTOS-Kernel/tasks.s: home/meow/FreeRTOS-Kernel/tasks.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/tasks.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/tasks.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/tasks.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/tasks.c.s
+
+home/meow/FreeRTOS-Kernel/timers.o: home/meow/FreeRTOS-Kernel/timers.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/timers.o
+
+# target to build an object file
+home/meow/FreeRTOS-Kernel/timers.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/timers.c.o
+.PHONY : home/meow/FreeRTOS-Kernel/timers.c.o
+
+home/meow/FreeRTOS-Kernel/timers.i: home/meow/FreeRTOS-Kernel/timers.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/timers.i
+
+# target to preprocess a source file
+home/meow/FreeRTOS-Kernel/timers.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/timers.c.i
+.PHONY : home/meow/FreeRTOS-Kernel/timers.c.i
+
+home/meow/FreeRTOS-Kernel/timers.s: home/meow/FreeRTOS-Kernel/timers.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/timers.s
+
+# target to generate assembly for a file
+home/meow/FreeRTOS-Kernel/timers.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/timers.c.s
+.PHONY : home/meow/FreeRTOS-Kernel/timers.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1600,6 +1912,12 @@ help:
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_clocks/clocks.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_clocks/clocks.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_divider/divider.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.i"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_dma/dma.s"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.i"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_exception/exception.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.o"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/gpio.s"
@@ -1613,6 +1931,9 @@ help:
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.o"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pll/pll.s"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.i"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_spi/spi.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.o"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_sync/sync.s"
@@ -1679,6 +2000,9 @@ help:
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_malloc/malloc.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_malloc/malloc.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_mem_ops/mem_ops_aeabi.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.i"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_multicore/multicore.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.o"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_platform_common/common.s"
@@ -1712,6 +2036,33 @@ help:
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_stdlib/stdlib.o"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_stdlib/stdlib.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_stdlib/stdlib.s"
+	@echo "... home/meow/FreeRTOS-Kernel/croutine.o"
+	@echo "... home/meow/FreeRTOS-Kernel/croutine.i"
+	@echo "... home/meow/FreeRTOS-Kernel/croutine.s"
+	@echo "... home/meow/FreeRTOS-Kernel/event_groups.o"
+	@echo "... home/meow/FreeRTOS-Kernel/event_groups.i"
+	@echo "... home/meow/FreeRTOS-Kernel/event_groups.s"
+	@echo "... home/meow/FreeRTOS-Kernel/list.o"
+	@echo "... home/meow/FreeRTOS-Kernel/list.i"
+	@echo "... home/meow/FreeRTOS-Kernel/list.s"
+	@echo "... home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.o"
+	@echo "... home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.i"
+	@echo "... home/meow/FreeRTOS-Kernel/portable/MemMang/heap_4.s"
+	@echo "... home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.o"
+	@echo "... home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.i"
+	@echo "... home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.s"
+	@echo "... home/meow/FreeRTOS-Kernel/queue.o"
+	@echo "... home/meow/FreeRTOS-Kernel/queue.i"
+	@echo "... home/meow/FreeRTOS-Kernel/queue.s"
+	@echo "... home/meow/FreeRTOS-Kernel/stream_buffer.o"
+	@echo "... home/meow/FreeRTOS-Kernel/stream_buffer.i"
+	@echo "... home/meow/FreeRTOS-Kernel/stream_buffer.s"
+	@echo "... home/meow/FreeRTOS-Kernel/tasks.o"
+	@echo "... home/meow/FreeRTOS-Kernel/tasks.i"
+	@echo "... home/meow/FreeRTOS-Kernel/tasks.s"
+	@echo "... home/meow/FreeRTOS-Kernel/timers.o"
+	@echo "... home/meow/FreeRTOS-Kernel/timers.i"
+	@echo "... home/meow/FreeRTOS-Kernel/timers.s"
 .PHONY : help
 
 

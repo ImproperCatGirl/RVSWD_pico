@@ -258,6 +258,18 @@ FETCHCONTENT_QUIET:BOOL=ON
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
 
+//Path to the FreeRTOS_KERNEL
+FREERTOS_KERNEL_PATH:PATH=/home/meow/FreeRTOS-Kernel
+
+//Value Computed by CMake
+FreeRTOS-Kernel_BINARY_DIR:STATIC=/home/meow/Projects/RVSWD_pico/FREERTOS_KERNEL
+
+//Value Computed by CMake
+FreeRTOS-Kernel_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+FreeRTOS-Kernel_SOURCE_DIR:STATIC=/home/meow/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040
+
 //PICO target board (e.g. pico, pico2)
 PICO_BOARD:STRING=pico
 
@@ -459,7 +471,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=98
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=99
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

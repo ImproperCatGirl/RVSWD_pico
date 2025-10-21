@@ -36,6 +36,11 @@ project(RVSWD_pico C CXX ASM)
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
+
+# Pull in FreeRTOS
+include(FreeRTOS_Kernel_import.cmake)
+
+
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(RVSWD_pico RVSWD_pico.c  RVSWD_bitbang_CPU.c RVSWD_bitbang_CPU_2.c RVSWD_pio.c)
@@ -54,7 +59,8 @@ pico_enable_stdio_usb(RVSWD_pico 0)
 
 # Add the standard library to the build
 target_link_libraries(RVSWD_pico
-        pico_stdlib)
+        pico_stdlib
+        FreeRTOS-Kernel FreeRTOS-Kernel-Heap4 hardware_spi hardware_gpio hardware_dma)
 
 # Add the standard include files to the build
 target_include_directories(RVSWD_pico PRIVATE

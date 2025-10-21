@@ -5,11 +5,15 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
+#include "projdefs.h"
 #include "time.h"
 
 #include <pico/time.h>
 #include "blink.pio.h"
 #include "rvswd.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
 
 
 #define CH32_REG_DEBUG_DATA0        0x04  // Data register 0, can be used for temporary storage of data
@@ -49,23 +53,49 @@
 static uint8_t const ch32v20x_readmem[] = {0x88, 0x41, 0x02, 0x90};
 static uint8_t const ch32v20x_writemem[] = {0x88, 0xc1, 0x02, 0x90};
 
+rvswd_handle_t wch_handle_pio;
 
 #define PULL_HELPER_PIN 14
 
 #define LOGIC_ANALYZER_HELPER_PIN 10
 
-void blink_pin_forever(PIO pio, uint sm, uint offset, uint pin, uint freq) {
-    blink_program_init(pio, sm, offset, pin);
-    pio_sm_set_enabled(pio, sm, true);
+void vApplicationMallocFailedHook(void) {
+    printf("malloc failed!\n");
+    for(;;); // Halt or handle error
+}
 
-    printf("Blinking pin %d at %d Hz\n", pin, freq);
-
-    // PIO counter program takes 3 more cycles in total than we pass as
-    // input (wait for n + 1; mov; jmp)
-    pio->txf[sm] = (125000000 / (2 * freq)) - 3;
+void vApplicationStackOverflowHook( TaskHandle_t xTask,
+    char * pcTaskName )
+{
+    printf("%s Stack Overflow\n", pcTaskName);
+    while(1);
 }
 
 
+void RVSWD_Task(void *params)
+{
+    uint32_t data0_val = 0;
+    while(1)
+    {
+        //rvswd_pio_reset(&wch_handle_pio);
+        uint32_t value = 0xAA;
+        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_DMSTATUS, &value);
+        printf("DMSTATUS = %04X\n", value);
+
+        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_HARTINFO, &value);
+        printf("HARTINFO = %04X\n", value);
+
+        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_DATA0, &value);
+        printf("DATA0 = %04X\n", value);
+
+        //sleep_ms(10);
+        rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DATA0, data0_val);
+
+        data0_val++;
+        vTaskDelay(pdMS_TO_TICKS(500));
+        //sleep_ms(500);
+    }
+}
 
 int main()
 {
@@ -84,55 +114,10 @@ int main()
     gpio_set_dir(LOGIC_ANALYZER_HELPER_PIN, GPIO_OUT);
     gpio_put(LOGIC_ANALYZER_HELPER_PIN, 0);
 
-
-    uint32_t data0_val = 0;
-    /*rvswd_init(&wch_handle_type0);
-    wch_handle_type0.logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN;
-    rvswd_reset(&wch_handle_type0);
-
-    rvswd_write(&wch_handle_type0, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
-    rvswd_write(&wch_handle_type0, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
-    rvswd_write(&wch_handle_type0, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
-    rvswd_write(&wch_handle_type0, CH32_REG_DEBUG_DMCONTROL, 0x00000003);  // Initiate a core reset request
-
-    uint8_t timeout = 50;
-    while (1) {
-        uint32_t value;
-        rvswd_read(&wch_handle_type0, CH32_REG_DEBUG_DMSTATUS, &value);
-        printf("DMSTATUS = %08X\n", value);
-        if (((value >> 18) & 0b11) == 0b11) {  // Check that processor has been reset
-            printf("SUCCESS!\n");
-            break;
-        }
-        if (timeout == 0) {
-            printf("Failed to reset microprocessor");
-            return RVSWD_FAIL;
-        }
-        timeout--;
-        sleep_ms(10);
-        //vTaskDelay(pdMS_TO_TICKS(10));
-    }
-    sleep_ms(100);
-    for(int i = 0; i < 2; i++)
-    {
-        uint32_t value = 0xAA;
-        rvswd_read(&wch_handle_type0, CH32_REG_DEBUG_DMSTATUS, &value);
-        printf("DMSTATUS = %04X\n", value);
-
-        rvswd_read(&wch_handle_type0, CH32_REG_DEBUG_HARTINFO, &value);
-        printf("HARTINFO = %04X\n", value);
-
-        rvswd_read(&wch_handle_type0, CH32_REG_DEBUG_DATA0, &value);
-        printf("DATA0 = %04X\n", value);
-
-        sleep_ms(10);
-        rvswd_write(&wch_handle_type0, CH32_REG_DEBUG_DATA0, data0_val);
-
-        data0_val++;
-        sleep_ms(500);
-    }*/
     printf("PIO mode test\n");
-    rvswd_handle_t wch_handle_pio = {.swclk = 16, .swdio = 15 , .logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN};
+    wch_handle_pio.swclk = 16;
+    wch_handle_pio.swdio = 15;
+    wch_handle_pio.logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN;
     rvswd_pio_init(&wch_handle_pio);
     rvswd_pio_reset(&wch_handle_pio);
 
@@ -140,40 +125,21 @@ int main()
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000003);  // Initiate a core reset request
-    while(1)
-    {
-        //rvswd_pio_reset(&wch_handle_pio);
-        uint32_t value = 0xAA;
-        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_DMSTATUS, &value);
-        printf("DMSTATUS = %04X\n", value);
 
-        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_HARTINFO, &value);
-        printf("HARTINFO = %04X\n", value);
+    #if defined(portSUPPORT_SMP) && (portSUPPORT_SMP == 1)
+    #warning "FreeRTOS is configured for SMP mode."
+#else
+    #error "FreeRTOS is NOT configured for SMP mode."
+#endif
 
-        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_DATA0, &value);
-        printf("DATA0 = %04X\n", value);
-
-        sleep_ms(10);
-        rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DATA0, data0_val);
-
-        data0_val++;
-
-        //sleep_ms(500);
-    }
-    // PIO Blinking example
-    /*PIO pio = pio0;
-    uint offset = pio_add_program(pio, &blink_program);
-    printf("Loaded program at %d\n", offset);
+    TaskHandle_t xHandleRVSWD = NULL;
     
-    #ifdef PICO_DEFAULT_LED_PIN
-    blink_pin_forever(pio, 0, offset, PICO_DEFAULT_LED_PIN, 3);
-    #else
-    blink_pin_forever(pio, 0, offset, 6, 3);
-    #endif
-    // For more pio examples see https://github.com/raspberrypi/pico-examples/tree/master/pio
 
-    while (true) {
-        printf("Hello, world!\n");
-        sleep_ms(1000);
-    }*/
+    xTaskCreate( RVSWD_Task, "RVSWD_Task", 1024, NULL, 1, &xHandleRVSWD );
+    vTaskCoreAffinitySet( xHandleRVSWD, ( 1U << 0 ) );  // Affinity mask for core 0
+
+
+    vTaskStartScheduler();
+
+    while(1);
 }
