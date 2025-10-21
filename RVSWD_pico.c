@@ -86,7 +86,7 @@ int main()
 
 
     uint32_t data0_val = 0;
-    rvswd_init(&wch_handle_type0);
+    /*rvswd_init(&wch_handle_type0);
     wch_handle_type0.logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN;
     rvswd_reset(&wch_handle_type0);
 
@@ -130,16 +130,16 @@ int main()
 
         data0_val++;
         sleep_ms(500);
-    }
+    }*/
     printf("PIO mode test\n");
     rvswd_handle_t wch_handle_pio = {.swclk = 16, .swdio = 15 , .logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN};
     rvswd_pio_init(&wch_handle_pio);
-    /*rvswd_pio_reset(&wch_handle_pio);
+    rvswd_pio_reset(&wch_handle_pio);
 
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
     rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
-    rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000003);  // Initiate a core reset request*/
+    rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DMCONTROL, 0x00000003);  // Initiate a core reset request
     while(1)
     {
         //rvswd_pio_reset(&wch_handle_pio);
@@ -158,7 +158,7 @@ int main()
 
         data0_val++;
 
-        sleep_ms(1000);
+        //sleep_ms(500);
     }
     // PIO Blinking example
     /*PIO pio = pio0;

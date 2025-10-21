@@ -13,18 +13,17 @@
 // -------- //
 
 #define rvswd_io_wrap_target 0
-#define rvswd_io_wrap 30
+#define rvswd_io_wrap 26
 #define rvswd_io_pio_version 0
 
-#define rvswd_io_BIT_DELAY 7
-#define rvswd_io_DELAY_1US 7
+#define rvswd_io_BIT_DELAY 2
 
 #define rvswd_io_offset_get_next_cmd 0u
 #define rvswd_io_offset_write_bits 4u
-#define rvswd_io_offset_read_bits 11u
-#define rvswd_io_offset_start 16u
-#define rvswd_io_offset_stop 20u
-#define rvswd_io_offset_reset 25u
+#define rvswd_io_offset_read_bits 10u
+#define rvswd_io_offset_start 15u
+#define rvswd_io_offset_stop 18u
+#define rvswd_io_offset_reset 22u
 
 static const uint16_t rvswd_io_program_instructions[] = {
             //     .wrap_target
@@ -33,39 +32,35 @@ static const uint16_t rvswd_io_program_instructions[] = {
     0x6081, //  2: out    pindirs, 1
     0x60a5, //  3: out    pc, 5
     0x80a0, //  4: pull   block
-    0xe081, //  5: set    pindirs, 1
-    0x7701, //  6: out    pins, 1         side 0 [7]
-    0xbf42, //  7: nop                    side 1 [7]
-    0x0046, //  8: jmp    x--, 6
-    0x0000, //  9: jmp    0
-    0xf880, // 10: set    pindirs, 0      side 1
-    0xb742, // 11: nop                    side 0 [7]
-    0x5f01, // 12: in     pins, 1         side 1 [7]
-    0x004b, // 13: jmp    x--, 11
-    0x8020, // 14: push   block
-    0x0000, // 15: jmp    0
-    0xe081, // 16: set    pindirs, 1
-    0xff01, // 17: set    pins, 1         side 1 [7]
-    0xff00, // 18: set    pins, 0         side 1 [7]
-    0x0000, // 19: jmp    0
-    0xe081, // 20: set    pindirs, 1
-    0xff00, // 21: set    pins, 0         side 1 [7]
-    0xff01, // 22: set    pins, 1         side 1 [7]
-    0xe080, // 23: set    pindirs, 0
-    0x0000, // 24: jmp    0
-    0xe081, // 25: set    pindirs, 1
-    0xff01, // 26: set    pins, 1         side 1 [7]
-    0xb742, // 27: nop                    side 0 [7]
-    0xbf42, // 28: nop                    side 1 [7]
-    0x005b, // 29: jmp    x--, 27
-    0x0014, // 30: jmp    20
+    0x7201, //  5: out    pins, 1         side 0 [2]
+    0xba42, //  6: nop                    side 1 [2]
+    0x0045, //  7: jmp    x--, 5
+    0x0000, //  8: jmp    0
+    0xb842, //  9: nop                    side 1
+    0xb242, // 10: nop                    side 0 [2]
+    0x5a01, // 11: in     pins, 1         side 1 [2]
+    0x004a, // 12: jmp    x--, 10
+    0x8020, // 13: push   block
+    0x0000, // 14: jmp    0
+    0xfa01, // 15: set    pins, 1         side 1 [2]
+    0xfa00, // 16: set    pins, 0         side 1 [2]
+    0x0000, // 17: jmp    0
+    0xfa00, // 18: set    pins, 0         side 1 [2]
+    0xfa01, // 19: set    pins, 1         side 1 [2]
+    0xe080, // 20: set    pindirs, 0
+    0x0000, // 21: jmp    0
+    0xfa01, // 22: set    pins, 1         side 1 [2]
+    0xb242, // 23: nop                    side 0 [2]
+    0xba42, // 24: nop                    side 1 [2]
+    0x0057, // 25: jmp    x--, 23
+    0x0012, // 26: jmp    18
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program rvswd_io_program = {
     .instructions = rvswd_io_program_instructions,
-    .length = 31,
+    .length = 27,
     .origin = -1,
     .pio_version = rvswd_io_pio_version,
 #if PICO_PIO_VERSION > 0

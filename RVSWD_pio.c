@@ -18,7 +18,7 @@
 
 // PIO clock frequency (e.g., 10 MHz). 
 // This gives 100ns resolution for delays.
-#define PIO_CLK_HZ 5000000.0f
+#define PIO_CLK_HZ 100*1000*1000.0f
 
 //
 // --- PIO Helper Functions ---
@@ -128,6 +128,7 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 
     // Clock divider (e.g., 125MHz / 10MHz = 12.5)
     float pio_clk_div = (float)clock_get_hz(clk_sys) / PIO_CLK_HZ;
+    pio_clk_div=10;
     sm_config_set_clkdiv(&c, pio_clk_div);
 
     // FIFO configuration
