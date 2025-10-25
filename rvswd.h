@@ -20,6 +20,22 @@
     uint logic_helper_pin;
  } rvswd_handle_t;
  
+ typedef enum rvswd_opcode {
+    RVSWD_WRITE,
+    RVSWD_READ,
+    RVSWD_RESET,
+} rvswd_opcode_t;
+
+ typedef struct rvswd_op
+ {
+    rvswd_opcode_t opcode;
+    uint8_t addr;
+    uint32_t data_to_target;
+    uint8_t serial;
+ } rvswd_op_t;
+
+
+
  typedef enum rvswd_result {
      RVSWD_OK = 0,
      RVSWD_FAIL = 1,
@@ -27,6 +43,13 @@
      RVSWD_PARITY_ERROR = 3,
  } rvswd_result_t;
 
+ typedef struct rvswd_op_result
+ {
+    rvswd_opcode_t opcode;
+    rvswd_result_t status;
+    uint32_t data_from_target;
+    uint8_t serial;
+ } rvswd_op_result_t;
 
  rvswd_result_t rvswd_start(rvswd_handle_t* handle);
  rvswd_result_t rvswd_stop(rvswd_handle_t* handle);

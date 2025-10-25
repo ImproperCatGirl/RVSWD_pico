@@ -316,6 +316,30 @@ RVSWD_pio.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/RVSWD_pio.c.s
 .PHONY : RVSWD_pio.c.s
 
+USB.o: USB.c.o
+.PHONY : USB.o
+
+# target to build an object file
+USB.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/USB.c.o
+.PHONY : USB.c.o
+
+USB.i: USB.c.i
+.PHONY : USB.i
+
+# target to preprocess a source file
+USB.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/USB.c.i
+.PHONY : USB.c.i
+
+USB.s: USB.c.s
+.PHONY : USB.s
+
+# target to generate assembly for a file
+USB.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/USB.c.s
+.PHONY : USB.c.s
+
 home/meow/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.o: home/meow/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.c.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.o
 
@@ -1212,6 +1236,30 @@ home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_double/double_v1_rom_shim_rp20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.S.o
 
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.o
+
+# target to build an object file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i
+
+# target to preprocess a source file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s
+
+# target to generate assembly for a file
+home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+.PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+
 home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.o: home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.c.o
 .PHONY : home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.o
 
@@ -1844,6 +1892,486 @@ home/meow/FreeRTOS-Kernel/timers.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/timers.c.s
 .PHONY : home/meow/FreeRTOS-Kernel/timers.c.s
 
+tinyusb/src/class/audio/audio_device.o: tinyusb/src/class/audio/audio_device.c.o
+.PHONY : tinyusb/src/class/audio/audio_device.o
+
+# target to build an object file
+tinyusb/src/class/audio/audio_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/audio/audio_device.c.o
+.PHONY : tinyusb/src/class/audio/audio_device.c.o
+
+tinyusb/src/class/audio/audio_device.i: tinyusb/src/class/audio/audio_device.c.i
+.PHONY : tinyusb/src/class/audio/audio_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/audio/audio_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/audio/audio_device.c.i
+.PHONY : tinyusb/src/class/audio/audio_device.c.i
+
+tinyusb/src/class/audio/audio_device.s: tinyusb/src/class/audio/audio_device.c.s
+.PHONY : tinyusb/src/class/audio/audio_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/audio/audio_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/audio/audio_device.c.s
+.PHONY : tinyusb/src/class/audio/audio_device.c.s
+
+tinyusb/src/class/cdc/cdc_device.o: tinyusb/src/class/cdc/cdc_device.c.o
+.PHONY : tinyusb/src/class/cdc/cdc_device.o
+
+# target to build an object file
+tinyusb/src/class/cdc/cdc_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/cdc/cdc_device.c.o
+.PHONY : tinyusb/src/class/cdc/cdc_device.c.o
+
+tinyusb/src/class/cdc/cdc_device.i: tinyusb/src/class/cdc/cdc_device.c.i
+.PHONY : tinyusb/src/class/cdc/cdc_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/cdc/cdc_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/cdc/cdc_device.c.i
+.PHONY : tinyusb/src/class/cdc/cdc_device.c.i
+
+tinyusb/src/class/cdc/cdc_device.s: tinyusb/src/class/cdc/cdc_device.c.s
+.PHONY : tinyusb/src/class/cdc/cdc_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/cdc/cdc_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/cdc/cdc_device.c.s
+.PHONY : tinyusb/src/class/cdc/cdc_device.c.s
+
+tinyusb/src/class/dfu/dfu_device.o: tinyusb/src/class/dfu/dfu_device.c.o
+.PHONY : tinyusb/src/class/dfu/dfu_device.o
+
+# target to build an object file
+tinyusb/src/class/dfu/dfu_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/dfu/dfu_device.c.o
+.PHONY : tinyusb/src/class/dfu/dfu_device.c.o
+
+tinyusb/src/class/dfu/dfu_device.i: tinyusb/src/class/dfu/dfu_device.c.i
+.PHONY : tinyusb/src/class/dfu/dfu_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/dfu/dfu_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/dfu/dfu_device.c.i
+.PHONY : tinyusb/src/class/dfu/dfu_device.c.i
+
+tinyusb/src/class/dfu/dfu_device.s: tinyusb/src/class/dfu/dfu_device.c.s
+.PHONY : tinyusb/src/class/dfu/dfu_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/dfu/dfu_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/dfu/dfu_device.c.s
+.PHONY : tinyusb/src/class/dfu/dfu_device.c.s
+
+tinyusb/src/class/dfu/dfu_rt_device.o: tinyusb/src/class/dfu/dfu_rt_device.c.o
+.PHONY : tinyusb/src/class/dfu/dfu_rt_device.o
+
+# target to build an object file
+tinyusb/src/class/dfu/dfu_rt_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/dfu/dfu_rt_device.c.o
+.PHONY : tinyusb/src/class/dfu/dfu_rt_device.c.o
+
+tinyusb/src/class/dfu/dfu_rt_device.i: tinyusb/src/class/dfu/dfu_rt_device.c.i
+.PHONY : tinyusb/src/class/dfu/dfu_rt_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/dfu/dfu_rt_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/dfu/dfu_rt_device.c.i
+.PHONY : tinyusb/src/class/dfu/dfu_rt_device.c.i
+
+tinyusb/src/class/dfu/dfu_rt_device.s: tinyusb/src/class/dfu/dfu_rt_device.c.s
+.PHONY : tinyusb/src/class/dfu/dfu_rt_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/dfu/dfu_rt_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/dfu/dfu_rt_device.c.s
+.PHONY : tinyusb/src/class/dfu/dfu_rt_device.c.s
+
+tinyusb/src/class/hid/hid_device.o: tinyusb/src/class/hid/hid_device.c.o
+.PHONY : tinyusb/src/class/hid/hid_device.o
+
+# target to build an object file
+tinyusb/src/class/hid/hid_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/hid/hid_device.c.o
+.PHONY : tinyusb/src/class/hid/hid_device.c.o
+
+tinyusb/src/class/hid/hid_device.i: tinyusb/src/class/hid/hid_device.c.i
+.PHONY : tinyusb/src/class/hid/hid_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/hid/hid_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/hid/hid_device.c.i
+.PHONY : tinyusb/src/class/hid/hid_device.c.i
+
+tinyusb/src/class/hid/hid_device.s: tinyusb/src/class/hid/hid_device.c.s
+.PHONY : tinyusb/src/class/hid/hid_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/hid/hid_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/hid/hid_device.c.s
+.PHONY : tinyusb/src/class/hid/hid_device.c.s
+
+tinyusb/src/class/midi/midi_device.o: tinyusb/src/class/midi/midi_device.c.o
+.PHONY : tinyusb/src/class/midi/midi_device.o
+
+# target to build an object file
+tinyusb/src/class/midi/midi_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/midi/midi_device.c.o
+.PHONY : tinyusb/src/class/midi/midi_device.c.o
+
+tinyusb/src/class/midi/midi_device.i: tinyusb/src/class/midi/midi_device.c.i
+.PHONY : tinyusb/src/class/midi/midi_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/midi/midi_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/midi/midi_device.c.i
+.PHONY : tinyusb/src/class/midi/midi_device.c.i
+
+tinyusb/src/class/midi/midi_device.s: tinyusb/src/class/midi/midi_device.c.s
+.PHONY : tinyusb/src/class/midi/midi_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/midi/midi_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/midi/midi_device.c.s
+.PHONY : tinyusb/src/class/midi/midi_device.c.s
+
+tinyusb/src/class/msc/msc_device.o: tinyusb/src/class/msc/msc_device.c.o
+.PHONY : tinyusb/src/class/msc/msc_device.o
+
+# target to build an object file
+tinyusb/src/class/msc/msc_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/msc/msc_device.c.o
+.PHONY : tinyusb/src/class/msc/msc_device.c.o
+
+tinyusb/src/class/msc/msc_device.i: tinyusb/src/class/msc/msc_device.c.i
+.PHONY : tinyusb/src/class/msc/msc_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/msc/msc_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/msc/msc_device.c.i
+.PHONY : tinyusb/src/class/msc/msc_device.c.i
+
+tinyusb/src/class/msc/msc_device.s: tinyusb/src/class/msc/msc_device.c.s
+.PHONY : tinyusb/src/class/msc/msc_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/msc/msc_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/msc/msc_device.c.s
+.PHONY : tinyusb/src/class/msc/msc_device.c.s
+
+tinyusb/src/class/mtp/mtp_device.o: tinyusb/src/class/mtp/mtp_device.c.o
+.PHONY : tinyusb/src/class/mtp/mtp_device.o
+
+# target to build an object file
+tinyusb/src/class/mtp/mtp_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/mtp/mtp_device.c.o
+.PHONY : tinyusb/src/class/mtp/mtp_device.c.o
+
+tinyusb/src/class/mtp/mtp_device.i: tinyusb/src/class/mtp/mtp_device.c.i
+.PHONY : tinyusb/src/class/mtp/mtp_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/mtp/mtp_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/mtp/mtp_device.c.i
+.PHONY : tinyusb/src/class/mtp/mtp_device.c.i
+
+tinyusb/src/class/mtp/mtp_device.s: tinyusb/src/class/mtp/mtp_device.c.s
+.PHONY : tinyusb/src/class/mtp/mtp_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/mtp/mtp_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/mtp/mtp_device.c.s
+.PHONY : tinyusb/src/class/mtp/mtp_device.c.s
+
+tinyusb/src/class/net/ecm_rndis_device.o: tinyusb/src/class/net/ecm_rndis_device.c.o
+.PHONY : tinyusb/src/class/net/ecm_rndis_device.o
+
+# target to build an object file
+tinyusb/src/class/net/ecm_rndis_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/net/ecm_rndis_device.c.o
+.PHONY : tinyusb/src/class/net/ecm_rndis_device.c.o
+
+tinyusb/src/class/net/ecm_rndis_device.i: tinyusb/src/class/net/ecm_rndis_device.c.i
+.PHONY : tinyusb/src/class/net/ecm_rndis_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/net/ecm_rndis_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/net/ecm_rndis_device.c.i
+.PHONY : tinyusb/src/class/net/ecm_rndis_device.c.i
+
+tinyusb/src/class/net/ecm_rndis_device.s: tinyusb/src/class/net/ecm_rndis_device.c.s
+.PHONY : tinyusb/src/class/net/ecm_rndis_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/net/ecm_rndis_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/net/ecm_rndis_device.c.s
+.PHONY : tinyusb/src/class/net/ecm_rndis_device.c.s
+
+tinyusb/src/class/net/ncm_device.o: tinyusb/src/class/net/ncm_device.c.o
+.PHONY : tinyusb/src/class/net/ncm_device.o
+
+# target to build an object file
+tinyusb/src/class/net/ncm_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/net/ncm_device.c.o
+.PHONY : tinyusb/src/class/net/ncm_device.c.o
+
+tinyusb/src/class/net/ncm_device.i: tinyusb/src/class/net/ncm_device.c.i
+.PHONY : tinyusb/src/class/net/ncm_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/net/ncm_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/net/ncm_device.c.i
+.PHONY : tinyusb/src/class/net/ncm_device.c.i
+
+tinyusb/src/class/net/ncm_device.s: tinyusb/src/class/net/ncm_device.c.s
+.PHONY : tinyusb/src/class/net/ncm_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/net/ncm_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/net/ncm_device.c.s
+.PHONY : tinyusb/src/class/net/ncm_device.c.s
+
+tinyusb/src/class/usbtmc/usbtmc_device.o: tinyusb/src/class/usbtmc/usbtmc_device.c.o
+.PHONY : tinyusb/src/class/usbtmc/usbtmc_device.o
+
+# target to build an object file
+tinyusb/src/class/usbtmc/usbtmc_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/usbtmc/usbtmc_device.c.o
+.PHONY : tinyusb/src/class/usbtmc/usbtmc_device.c.o
+
+tinyusb/src/class/usbtmc/usbtmc_device.i: tinyusb/src/class/usbtmc/usbtmc_device.c.i
+.PHONY : tinyusb/src/class/usbtmc/usbtmc_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/usbtmc/usbtmc_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/usbtmc/usbtmc_device.c.i
+.PHONY : tinyusb/src/class/usbtmc/usbtmc_device.c.i
+
+tinyusb/src/class/usbtmc/usbtmc_device.s: tinyusb/src/class/usbtmc/usbtmc_device.c.s
+.PHONY : tinyusb/src/class/usbtmc/usbtmc_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/usbtmc/usbtmc_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/usbtmc/usbtmc_device.c.s
+.PHONY : tinyusb/src/class/usbtmc/usbtmc_device.c.s
+
+tinyusb/src/class/vendor/vendor_device.o: tinyusb/src/class/vendor/vendor_device.c.o
+.PHONY : tinyusb/src/class/vendor/vendor_device.o
+
+# target to build an object file
+tinyusb/src/class/vendor/vendor_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/vendor/vendor_device.c.o
+.PHONY : tinyusb/src/class/vendor/vendor_device.c.o
+
+tinyusb/src/class/vendor/vendor_device.i: tinyusb/src/class/vendor/vendor_device.c.i
+.PHONY : tinyusb/src/class/vendor/vendor_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/vendor/vendor_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/vendor/vendor_device.c.i
+.PHONY : tinyusb/src/class/vendor/vendor_device.c.i
+
+tinyusb/src/class/vendor/vendor_device.s: tinyusb/src/class/vendor/vendor_device.c.s
+.PHONY : tinyusb/src/class/vendor/vendor_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/vendor/vendor_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/vendor/vendor_device.c.s
+.PHONY : tinyusb/src/class/vendor/vendor_device.c.s
+
+tinyusb/src/class/video/video_device.o: tinyusb/src/class/video/video_device.c.o
+.PHONY : tinyusb/src/class/video/video_device.o
+
+# target to build an object file
+tinyusb/src/class/video/video_device.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/video/video_device.c.o
+.PHONY : tinyusb/src/class/video/video_device.c.o
+
+tinyusb/src/class/video/video_device.i: tinyusb/src/class/video/video_device.c.i
+.PHONY : tinyusb/src/class/video/video_device.i
+
+# target to preprocess a source file
+tinyusb/src/class/video/video_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/video/video_device.c.i
+.PHONY : tinyusb/src/class/video/video_device.c.i
+
+tinyusb/src/class/video/video_device.s: tinyusb/src/class/video/video_device.c.s
+.PHONY : tinyusb/src/class/video/video_device.s
+
+# target to generate assembly for a file
+tinyusb/src/class/video/video_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/class/video/video_device.c.s
+.PHONY : tinyusb/src/class/video/video_device.c.s
+
+tinyusb/src/common/tusb_fifo.o: tinyusb/src/common/tusb_fifo.c.o
+.PHONY : tinyusb/src/common/tusb_fifo.o
+
+# target to build an object file
+tinyusb/src/common/tusb_fifo.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/common/tusb_fifo.c.o
+.PHONY : tinyusb/src/common/tusb_fifo.c.o
+
+tinyusb/src/common/tusb_fifo.i: tinyusb/src/common/tusb_fifo.c.i
+.PHONY : tinyusb/src/common/tusb_fifo.i
+
+# target to preprocess a source file
+tinyusb/src/common/tusb_fifo.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/common/tusb_fifo.c.i
+.PHONY : tinyusb/src/common/tusb_fifo.c.i
+
+tinyusb/src/common/tusb_fifo.s: tinyusb/src/common/tusb_fifo.c.s
+.PHONY : tinyusb/src/common/tusb_fifo.s
+
+# target to generate assembly for a file
+tinyusb/src/common/tusb_fifo.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/common/tusb_fifo.c.s
+.PHONY : tinyusb/src/common/tusb_fifo.c.s
+
+tinyusb/src/device/usbd.o: tinyusb/src/device/usbd.c.o
+.PHONY : tinyusb/src/device/usbd.o
+
+# target to build an object file
+tinyusb/src/device/usbd.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/device/usbd.c.o
+.PHONY : tinyusb/src/device/usbd.c.o
+
+tinyusb/src/device/usbd.i: tinyusb/src/device/usbd.c.i
+.PHONY : tinyusb/src/device/usbd.i
+
+# target to preprocess a source file
+tinyusb/src/device/usbd.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/device/usbd.c.i
+.PHONY : tinyusb/src/device/usbd.c.i
+
+tinyusb/src/device/usbd.s: tinyusb/src/device/usbd.c.s
+.PHONY : tinyusb/src/device/usbd.s
+
+# target to generate assembly for a file
+tinyusb/src/device/usbd.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/device/usbd.c.s
+.PHONY : tinyusb/src/device/usbd.c.s
+
+tinyusb/src/device/usbd_control.o: tinyusb/src/device/usbd_control.c.o
+.PHONY : tinyusb/src/device/usbd_control.o
+
+# target to build an object file
+tinyusb/src/device/usbd_control.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/device/usbd_control.c.o
+.PHONY : tinyusb/src/device/usbd_control.c.o
+
+tinyusb/src/device/usbd_control.i: tinyusb/src/device/usbd_control.c.i
+.PHONY : tinyusb/src/device/usbd_control.i
+
+# target to preprocess a source file
+tinyusb/src/device/usbd_control.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/device/usbd_control.c.i
+.PHONY : tinyusb/src/device/usbd_control.c.i
+
+tinyusb/src/device/usbd_control.s: tinyusb/src/device/usbd_control.c.s
+.PHONY : tinyusb/src/device/usbd_control.s
+
+# target to generate assembly for a file
+tinyusb/src/device/usbd_control.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/device/usbd_control.c.s
+.PHONY : tinyusb/src/device/usbd_control.c.s
+
+tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.o: tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.o
+
+# target to build an object file
+tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
+
+tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i: tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i
+
+# target to preprocess a source file
+tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+
+tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s: tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s
+
+# target to generate assembly for a file
+tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+
+tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.o: tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.o
+
+# target to build an object file
+tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
+
+tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i: tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i
+
+# target to preprocess a source file
+tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+
+tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s: tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s
+
+# target to generate assembly for a file
+tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+.PHONY : tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+
+tinyusb/src/tusb.o: tinyusb/src/tusb.c.o
+.PHONY : tinyusb/src/tusb.o
+
+# target to build an object file
+tinyusb/src/tusb.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/tusb.c.o
+.PHONY : tinyusb/src/tusb.c.o
+
+tinyusb/src/tusb.i: tinyusb/src/tusb.c.i
+.PHONY : tinyusb/src/tusb.i
+
+# target to preprocess a source file
+tinyusb/src/tusb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/tusb.c.i
+.PHONY : tinyusb/src/tusb.c.i
+
+tinyusb/src/tusb.s: tinyusb/src/tusb.c.s
+.PHONY : tinyusb/src/tusb.s
+
+# target to generate assembly for a file
+tinyusb/src/tusb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/tinyusb/src/tusb.c.s
+.PHONY : tinyusb/src/tusb.c.s
+
+usb_desc.o: usb_desc.c.o
+.PHONY : usb_desc.o
+
+# target to build an object file
+usb_desc.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/usb_desc.c.o
+.PHONY : usb_desc.c.o
+
+usb_desc.i: usb_desc.c.i
+.PHONY : usb_desc.i
+
+# target to preprocess a source file
+usb_desc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/usb_desc.c.i
+.PHONY : usb_desc.c.i
+
+usb_desc.s: usb_desc.c.s
+.PHONY : usb_desc.s
+
+# target to generate assembly for a file
+usb_desc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/usb_desc.c.s
+.PHONY : usb_desc.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1872,6 +2400,9 @@ help:
 	@echo "... RVSWD_pio.o"
 	@echo "... RVSWD_pio.i"
 	@echo "... RVSWD_pio.s"
+	@echo "... USB.o"
+	@echo "... USB.i"
+	@echo "... USB.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.o"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/common/hardware_claim/claim.s"
@@ -1984,6 +2515,9 @@ help:
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_double/double_math.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_double/double_math.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_double/double_v1_rom_shim_rp2040.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.o"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i"
+	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.o"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.i"
 	@echo "... home/meow/.pico-sdk/sdk/2.2.0/src/rp2_common/pico_flash/flash.s"
@@ -2063,6 +2597,66 @@ help:
 	@echo "... home/meow/FreeRTOS-Kernel/timers.o"
 	@echo "... home/meow/FreeRTOS-Kernel/timers.i"
 	@echo "... home/meow/FreeRTOS-Kernel/timers.s"
+	@echo "... tinyusb/src/class/audio/audio_device.o"
+	@echo "... tinyusb/src/class/audio/audio_device.i"
+	@echo "... tinyusb/src/class/audio/audio_device.s"
+	@echo "... tinyusb/src/class/cdc/cdc_device.o"
+	@echo "... tinyusb/src/class/cdc/cdc_device.i"
+	@echo "... tinyusb/src/class/cdc/cdc_device.s"
+	@echo "... tinyusb/src/class/dfu/dfu_device.o"
+	@echo "... tinyusb/src/class/dfu/dfu_device.i"
+	@echo "... tinyusb/src/class/dfu/dfu_device.s"
+	@echo "... tinyusb/src/class/dfu/dfu_rt_device.o"
+	@echo "... tinyusb/src/class/dfu/dfu_rt_device.i"
+	@echo "... tinyusb/src/class/dfu/dfu_rt_device.s"
+	@echo "... tinyusb/src/class/hid/hid_device.o"
+	@echo "... tinyusb/src/class/hid/hid_device.i"
+	@echo "... tinyusb/src/class/hid/hid_device.s"
+	@echo "... tinyusb/src/class/midi/midi_device.o"
+	@echo "... tinyusb/src/class/midi/midi_device.i"
+	@echo "... tinyusb/src/class/midi/midi_device.s"
+	@echo "... tinyusb/src/class/msc/msc_device.o"
+	@echo "... tinyusb/src/class/msc/msc_device.i"
+	@echo "... tinyusb/src/class/msc/msc_device.s"
+	@echo "... tinyusb/src/class/mtp/mtp_device.o"
+	@echo "... tinyusb/src/class/mtp/mtp_device.i"
+	@echo "... tinyusb/src/class/mtp/mtp_device.s"
+	@echo "... tinyusb/src/class/net/ecm_rndis_device.o"
+	@echo "... tinyusb/src/class/net/ecm_rndis_device.i"
+	@echo "... tinyusb/src/class/net/ecm_rndis_device.s"
+	@echo "... tinyusb/src/class/net/ncm_device.o"
+	@echo "... tinyusb/src/class/net/ncm_device.i"
+	@echo "... tinyusb/src/class/net/ncm_device.s"
+	@echo "... tinyusb/src/class/usbtmc/usbtmc_device.o"
+	@echo "... tinyusb/src/class/usbtmc/usbtmc_device.i"
+	@echo "... tinyusb/src/class/usbtmc/usbtmc_device.s"
+	@echo "... tinyusb/src/class/vendor/vendor_device.o"
+	@echo "... tinyusb/src/class/vendor/vendor_device.i"
+	@echo "... tinyusb/src/class/vendor/vendor_device.s"
+	@echo "... tinyusb/src/class/video/video_device.o"
+	@echo "... tinyusb/src/class/video/video_device.i"
+	@echo "... tinyusb/src/class/video/video_device.s"
+	@echo "... tinyusb/src/common/tusb_fifo.o"
+	@echo "... tinyusb/src/common/tusb_fifo.i"
+	@echo "... tinyusb/src/common/tusb_fifo.s"
+	@echo "... tinyusb/src/device/usbd.o"
+	@echo "... tinyusb/src/device/usbd.i"
+	@echo "... tinyusb/src/device/usbd.s"
+	@echo "... tinyusb/src/device/usbd_control.o"
+	@echo "... tinyusb/src/device/usbd_control.i"
+	@echo "... tinyusb/src/device/usbd_control.s"
+	@echo "... tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.o"
+	@echo "... tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i"
+	@echo "... tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s"
+	@echo "... tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.o"
+	@echo "... tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i"
+	@echo "... tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s"
+	@echo "... tinyusb/src/tusb.o"
+	@echo "... tinyusb/src/tusb.i"
+	@echo "... tinyusb/src/tusb.s"
+	@echo "... usb_desc.o"
+	@echo "... usb_desc.i"
+	@echo "... usb_desc.s"
 .PHONY : help
 
 

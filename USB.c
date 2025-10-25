@@ -1,0 +1,189 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019 Ha Thach (tinyusb.org)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <string.h>
+ 
+#include "class/vendor/vendor_device.h"
+#include "portmacro.h"
+#include "rvswd.h"
+ #include "tusb.h"
+
+ #include "FreeRTOS.h"
+#include "queue.h"
+ 
+ /* This example demonstrate HID Generic raw Input & Output.
+  * It will receive data from Host (In endpoint) and echo back (Out endpoint).
+  * HID Report descriptor use vendor for usage page (using template TUD_HID_REPORT_DESC_GENERIC_INOUT)
+  *
+  * There are 2 ways to test the sketch
+  * 1. Using nodejs
+  * - Install nodejs and npm to your PC
+  *
+  * - Install excellent node-hid (https://github.com/node-hid/node-hid) by
+  *   $ npm install node-hid
+  *
+  * - Run provided hid test script
+  *   $ node hid_test.js
+  *
+  * 2. Using python
+  * - Install `hid` package (https://pypi.org/project/hid/) by
+  *   $ pip install hid
+  *
+  * - hid package replies on hidapi (https://github.com/libusb/hidapi) for backend,
+  *   which already available in Linux. However on windows, you may need to download its dlls from their release page and
+  *   copy it over to folder where python is installed.
+  *
+  * - Run provided hid test script to send and receive data to this device.
+  *   $ python3 hid_test.py
+  */
+ 
+ //--------------------------------------------------------------------+
+ // MACRO CONSTANT TYPEDEF PROTYPES
+ //--------------------------------------------------------------------+
+ 
+ /* Blink pattern
+  * - 250 ms  : device not mounted
+  * - 1000 ms : device mounted
+  * - 2500 ms : device is suspended
+  */
+ enum  {
+   BLINK_NOT_MOUNTED = 250,
+   BLINK_MOUNTED = 1000,
+   BLINK_SUSPENDED = 2500,
+ };
+ 
+ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
+ 
+extern QueueHandle_t cmd_queue;
+
+extern QueueHandle_t result_queue;
+
+extern rvswd_handle_t wch_handle_pio;
+ //--------------------------------------------------------------------+
+ // Device callbacks
+ //--------------------------------------------------------------------+
+ 
+ // Invoked when device is mounted
+ void tud_mount_cb(void)
+ {
+   blink_interval_ms = BLINK_MOUNTED;
+ }
+ 
+ // Invoked when device is unmounted
+ void tud_umount_cb(void)
+ {
+   blink_interval_ms = BLINK_NOT_MOUNTED;
+ }
+ 
+ // Invoked when usb bus is suspended
+ // remote_wakeup_en : if host allow us  to perform remote wakeup
+ // Within 7ms, device must draw an average of current less than 2.5 mA from bus
+ void tud_suspend_cb(bool remote_wakeup_en)
+ {
+   (void) remote_wakeup_en;
+   //blink_interval_ms = BLINK_SUSPENDED;
+ }
+ 
+ // Invoked when usb bus is resumed
+ void tud_resume_cb(void)
+ {
+   blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
+ }
+ 
+ 
+ // Invoked when a bulk OUT transfer is received from the host
+void tud_vendor_rx_cb(uint8_t itf, uint8_t const* buffer, uint16_t bufsize)
+{
+    if(bufsize == 0)
+      return;
+    printf("vendor rx buffer:\n");
+    for(int i = 0; i < bufsize; i ++)
+    {
+        printf("%02X ", buffer[i]);
+        if(i % 16 == 0)
+        {
+            printf("\n");
+        }
+    }
+    printf("\n");
+    if((buffer[0] != 0xE5) || (buffer[1] != 0x8F))
+    {
+      printf("ERROR, invalid packet, dropping\n");
+      return;
+    }
+    uint8_t len = buffer[2];
+    const uint8_t *current = buffer + 2;
+    for(int i = 0; i < len; i++)
+    {
+      uint8_t opcode = *current;
+      current += 1; // 1 byte opecode
+
+      uint8_t buf_tmp[10] = {0};
+      uint8_t buf_tmp_len = 0;
+      rvswd_op_result_t res = {0};
+      if(opcode == 0x01) // read
+      {
+        rvswd_op_t op_read =
+        {
+          .serial = *current, 
+          .addr = *(current+1),
+          .opcode = RVSWD_READ,
+          .data_to_target = 0,
+        };
+        current += 2; // 1 byte address + 1 byte serial
+        xQueueSend(cmd_queue, &op_read, portMAX_DELAY);
+        //res.status = rvswd_pio_read(&wch_handle_pio, op_read.addr, &res.data_from_target);
+        /*buf_tmp_len = 6;
+        buf_tmp[0] = res.serial;
+        buf_tmp[1] = res.status;
+        memcpy(buf_tmp + 2, &res.data_from_target, sizeof(res.data_from_target));*/
+      }
+      if(opcode == 0x02) //write
+      {
+        rvswd_op_t op_write = 
+        {
+          .serial = *current, 
+          .addr = *(current+1),
+          .opcode = RVSWD_WRITE,
+          .data_to_target = 0,
+        };
+        memcpy(&op_write.data_to_target, current + 1, 4); // 32 bit value
+        current += 6; // 1 byte address + 1 byte serial + 4 byte data
+        xQueueSend(cmd_queue, &op_write, portMAX_DELAY);
+        /*res.status = rvswd_pio_write(&wch_handle_pio, op_write.addr, op_write.data_to_target);
+        buf_tmp_len = 2;
+        buf_tmp[0] = res.serial;
+        buf_tmp[1] = res.status;*/
+      }
+      if(opcode == 0x03)
+      {
+        //do nothing for now, as resetting is handled by RISC-V DMI
+      }
+      while(tud_vendor_write_available() < sizeof(buf_tmp_len)); // wait for USB
+      tud_vendor_write(buf_tmp, buf_tmp_len);
+    }
+}

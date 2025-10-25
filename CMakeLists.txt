@@ -33,6 +33,13 @@ include(pico_sdk_import.cmake)
 
 project(RVSWD_pico C CXX ASM)
 
+
+# Optional: If you want to completely skip bundled USB features (e.g., stdio over USB)
+set(PICO_STDIO_USB 0)  # Disables pico-sdk's USB serial; use TinyUSB's CDC if needed
+
+set(PICO_TINYUSB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tinyusb")
+
+
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
@@ -43,7 +50,8 @@ include(FreeRTOS_Kernel_import.cmake)
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(RVSWD_pico RVSWD_pico.c  RVSWD_bitbang_CPU.c RVSWD_bitbang_CPU_2.c RVSWD_pio.c)
+add_executable(RVSWD_pico RVSWD_pico.c  RVSWD_bitbang_CPU.c RVSWD_bitbang_CPU_2.c RVSWD_pio.c
+usb_desc.c USB.c)
 
 pico_set_program_name(RVSWD_pico "RVSWD_pico")
 pico_set_program_version(RVSWD_pico "0.1")
@@ -52,6 +60,11 @@ pico_set_program_version(RVSWD_pico "0.1")
 pico_generate_pio_header(RVSWD_pico ${CMAKE_CURRENT_LIST_DIR}/blink.pio
     ${CMAKE_CURRENT_LIST_DIR}/RVSWD_full.pio
 )
+
+
+# Add TinyUSB
+add_subdirectory(tinyusb/src)
+
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(RVSWD_pico 1)
@@ -71,6 +84,7 @@ target_include_directories(RVSWD_pico PRIVATE
 target_link_libraries(RVSWD_pico 
         hardware_pio
         hardware_gpio
+        tinyusb_device
         )
 
 pico_add_extra_outputs(RVSWD_pico)

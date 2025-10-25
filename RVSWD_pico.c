@@ -3,8 +3,11 @@
 #include <hardware/timer.h>
 #include <pico/time.h>
 #include <stdio.h>
+#include "class/vendor/vendor_device.h"
+#include "common/tusb_types.h"
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
+#include "portmacro.h"
 #include "projdefs.h"
 #include "time.h"
 
@@ -14,6 +17,9 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
+#include "tusb.h"
+#include "tusb_config.h"
 
 
 #define CH32_REG_DEBUG_DATA0        0x04  // Data register 0, can be used for temporary storage of data
@@ -55,6 +61,10 @@ static uint8_t const ch32v20x_writemem[] = {0x88, 0xc1, 0x02, 0x90};
 
 rvswd_handle_t wch_handle_pio;
 
+QueueHandle_t cmd_queue;
+
+QueueHandle_t result_queue;
+
 #define PULL_HELPER_PIN 14
 
 #define LOGIC_ANALYZER_HELPER_PIN 10
@@ -77,24 +87,61 @@ void RVSWD_Task(void *params)
     uint32_t data0_val = 0;
     while(1)
     {
-        //rvswd_pio_reset(&wch_handle_pio);
-        uint32_t value = 0xAA;
-        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_DMSTATUS, &value);
-        printf("DMSTATUS = %04X\n", value);
+        if(ulTaskNotifyTake(pdTRUE, 0)) // force flush the queue
+        {
+            tud_vendor_flush();
+        }
+        rvswd_op_t cmd = {0};
+        rvswd_op_result_t res = {0};
+        xQueueReceive(cmd_queue, &cmd, portMAX_DELAY);
+        res.opcode = cmd.opcode;
+        res.serial = cmd.serial;
+        if(cmd.opcode == RVSWD_WRITE)
+        {
+            res.status = rvswd_pio_write(&wch_handle_pio, cmd.addr, cmd.data_to_target);
+        }
+        if(cmd.opcode == RVSWD_READ)
+        {
+            res.status = rvswd_pio_read(&wch_handle_pio, cmd.addr, &res.data_from_target);
+        }
 
-        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_HARTINFO, &value);
-        printf("HARTINFO = %04X\n", value);
+        uint8_t buf_tmp[10] = {0};
+        uint8_t buf_tmp_len = 0;
+        if(res.opcode == RVSWD_WRITE)
+        {
+            buf_tmp_len = 2;
+            buf_tmp[0] = res.serial;
+            buf_tmp[1] = res.status;
+             // 1 byte status + 1 byte serial
+        }
+        if(res.opcode == RVSWD_READ)
+        {
+            buf_tmp_len = 6;
+            buf_tmp[0] = res.serial;
+            buf_tmp[1] = res.status;
+            memcpy(buf_tmp + 2, &res.data_from_target, sizeof(res.data_from_target));
+             // 1 byte status + 1 byte serial + 4 byte data
+        }
 
-        rvswd_pio_read(&wch_handle_pio, CH32_REG_DEBUG_DATA0, &value);
-        printf("DATA0 = %04X\n", value);
-
-        //sleep_ms(10);
-        rvswd_pio_write(&wch_handle_pio, CH32_REG_DEBUG_DATA0, data0_val);
-
-        data0_val++;
-        vTaskDelay(pdMS_TO_TICKS(500));
-        //sleep_ms(500);
+        while(tud_vendor_write_available() < buf_tmp_len); // wait for FIFO flushing
+        tud_vendor_write(buf_tmp, buf_tmp_len);
     }
+}
+
+void USB_Task(void *params)
+{
+     // init device stack on configured roothub port
+    tusb_rhport_init_t dev_init = {
+        .role = TUSB_ROLE_DEVICE,
+        .speed = TUSB_SPEED_AUTO
+    };
+    tusb_init(BOARD_TUD_RHPORT, &dev_init);
+
+    while(1)
+    {
+        tud_task();
+    }
+    vTaskDelete(NULL);
 }
 
 int main()
@@ -138,6 +185,10 @@ int main()
     xTaskCreate( RVSWD_Task, "RVSWD_Task", 1024, NULL, 1, &xHandleRVSWD );
     vTaskCoreAffinitySet( xHandleRVSWD, ( 1U << 0 ) );  // Affinity mask for core 0
 
+    xTaskCreate(USB_Task, "USB_Task", 4096, NULL, 1, NULL);
+
+    cmd_queue = xQueueCreate(256, sizeof(rvswd_op_t));
+    result_queue = xQueueCreate(256, sizeof(rvswd_op_result_t));
 
     vTaskStartScheduler();
 

@@ -39,7 +39,6 @@ public read_bits:
     jmp get_next_cmd
 
 ; --- Special Sequences ---
-; These ignore X-reg and Dir bit
 public start:
     set pins, 1  side 1 [BIT_DELAY] ; SWDIO=H, CLK=H, wait 1us
     set pins, 0  side 1 [BIT_DELAY] ; SWDIO=L, CLK=H, wait 1us
