@@ -26,14 +26,20 @@
     RVSWD_RESET,
 } rvswd_opcode_t;
 
- typedef struct rvswd_op
- {
-    rvswd_opcode_t opcode;
-    uint8_t addr;
-    uint32_t data_to_target;
+typedef struct {
     uint8_t serial;
- } rvswd_op_t;
-
+    rvswd_opcode_t opcode;
+    union {
+        struct {  // For READ
+            uint8_t addr;
+        } read;
+        struct {  // For WRITE
+            uint8_t addr;
+            uint32_t data_to_target;
+        } write;
+        // For RESET: no extra fields
+    } params;
+} rvswd_op_t;
 
 
  typedef enum rvswd_result {

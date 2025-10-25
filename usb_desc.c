@@ -23,7 +23,8 @@
  *
  */
 
- #include "tusb.h"
+ #include "common/tusb_types.h"
+#include "tusb.h"
  #include "usb_desc.h"
  
  //--------------------------------------------------------------------+
@@ -40,7 +41,7 @@
      .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
  
      .idVendor           = 0xCAFE, // Custom VID
-     .idProduct          = 0x4004, // Custom PID
+     .idProduct          = 0x8010, // Custom PID
      .bcdDevice          = 0x0100,
  
      .iManufacturer      = 0x01,
@@ -71,7 +72,7 @@
  uint8_t const desc_configuration[] =
  {
    // Config number, interface count, string index, total length, attribute, power in mA
-   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
+   TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_SELF_POWERED, 100),
  
    // Interface number, string index, EP Out & IN address, EP size
    TUD_VENDOR_DESCRIPTOR(ITF_NUM_VENDOR, 0, EPNUM_OUT, EPNUM_IN, 64)

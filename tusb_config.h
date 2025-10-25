@@ -55,12 +55,17 @@
  #error CFG_TUSB_MCU must be defined
  #endif
  
+ // Force-undefine the PICO SDK's compile-time definition
+#ifdef CFG_TUSB_OS
+#undef CFG_TUSB_OS
+#endif
+
  #ifndef CFG_TUSB_OS
  #define CFG_TUSB_OS           OPT_OS_FREERTOS
  #endif
  
  #ifndef CFG_TUSB_DEBUG
- #define CFG_TUSB_DEBUG        0
+ #define CFG_TUSB_DEBUG        2
  #endif
  
  // Enable Device stack

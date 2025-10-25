@@ -21,6 +21,7 @@
 #include "tusb.h"
 #include "tusb_config.h"
 
+#include "host_comms.h"
 
 #define CH32_REG_DEBUG_DATA0        0x04  // Data register 0, can be used for temporary storage of data
 #define CH32_REG_DEBUG_DATA1        0x05  // Data register 1, can be used for temporary storage of data
@@ -65,7 +66,16 @@ QueueHandle_t cmd_queue;
 
 QueueHandle_t result_queue;
 
-#define PULL_HELPER_PIN 14
+
+TaskHandle_t xHandleRVSWD = NULL;
+
+TaskHandle_t xHandleUSBWoker = NULL;
+
+TaskHandle_t xHandleTinyUSB = NULL;
+
+extern uint8_t cmd_len;
+
+#define PULL_HELPER_PIN 11
 
 #define LOGIC_ANALYZER_HELPER_PIN 10
 
@@ -84,47 +94,35 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask,
 
 void RVSWD_Task(void *params)
 {
-    uint32_t data0_val = 0;
     while(1)
     {
-        if(ulTaskNotifyTake(pdTRUE, 0)) // force flush the queue
-        {
-            tud_vendor_flush();
-        }
         rvswd_op_t cmd = {0};
         rvswd_op_result_t res = {0};
         xQueueReceive(cmd_queue, &cmd, portMAX_DELAY);
         res.opcode = cmd.opcode;
         res.serial = cmd.serial;
-        if(cmd.opcode == RVSWD_WRITE)
+        
+        if (cmd.opcode == RVSWD_WRITE) 
         {
-            res.status = rvswd_pio_write(&wch_handle_pio, cmd.addr, cmd.data_to_target);
+            res.status = rvswd_pio_write(&wch_handle_pio, cmd.params.write.addr, cmd.params.write.data_to_target);
+            printf("serial = %d, opcode = WRITE, address = %d\n", cmd.serial, cmd.params.write.addr);
+        } 
+        else if (cmd.opcode == RVSWD_READ) 
+        {
+            res.status = rvswd_pio_read(&wch_handle_pio, cmd.params.read.addr, &res.data_from_target);
+            printf("serial = %d, opcode = READ, address = %d\n", cmd.serial, cmd.params.read.addr);
+        } 
+        else if (cmd.opcode == RVSWD_RESET) {
+            res.status = RVSWD_OK;
+            rvswd_pio_reset(&wch_handle_pio);
         }
-        if(cmd.opcode == RVSWD_READ)
-        {
-            res.status = rvswd_pio_read(&wch_handle_pio, cmd.addr, &res.data_from_target);
-        }
-
-        uint8_t buf_tmp[10] = {0};
-        uint8_t buf_tmp_len = 0;
-        if(res.opcode == RVSWD_WRITE)
-        {
-            buf_tmp_len = 2;
-            buf_tmp[0] = res.serial;
-            buf_tmp[1] = res.status;
-             // 1 byte status + 1 byte serial
-        }
-        if(res.opcode == RVSWD_READ)
-        {
-            buf_tmp_len = 6;
-            buf_tmp[0] = res.serial;
-            buf_tmp[1] = res.status;
-            memcpy(buf_tmp + 2, &res.data_from_target, sizeof(res.data_from_target));
-             // 1 byte status + 1 byte serial + 4 byte data
+        //Notify before send for last command
+        if (cmd.serial == cmd_len) {  // Or cmd.batch_size if added
+            xTaskNotifyGive(xHandleUSBWoker);
         }
 
-        while(tud_vendor_write_available() < buf_tmp_len); // wait for FIFO flushing
-        tud_vendor_write(buf_tmp, buf_tmp_len);
+        xQueueSend(result_queue, &res, portMAX_DELAY);
+
     }
 }
 
@@ -140,16 +138,18 @@ void USB_Task(void *params)
     while(1)
     {
         tud_task();
+        printf("TinyUSB still alive\n");
     }
     vTaskDelete(NULL);
 }
+
 
 int main()
 {
     stdio_init_all();
     printf("fuck WCH\n");
     timer_hw->dbgpause = 0;
-    rvswd_handle_t wch_handle_type0 = {.swclk = 16, .swdio = 15};
+    rvswd_handle_t wch_handle_type0 = {.swclk = 7, .swdio = 8};
 
     gpio_init(PULL_HELPER_PIN);
     gpio_set_function(PULL_HELPER_PIN, GPIO_FUNC_SIO);
@@ -162,8 +162,8 @@ int main()
     gpio_put(LOGIC_ANALYZER_HELPER_PIN, 0);
 
     printf("PIO mode test\n");
-    wch_handle_pio.swclk = 16;
-    wch_handle_pio.swdio = 15;
+    wch_handle_pio.swclk = 7;
+    wch_handle_pio.swdio = 8;
     wch_handle_pio.logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN;
     rvswd_pio_init(&wch_handle_pio);
     rvswd_pio_reset(&wch_handle_pio);
@@ -179,16 +179,19 @@ int main()
     #error "FreeRTOS is NOT configured for SMP mode."
 #endif
 
-    TaskHandle_t xHandleRVSWD = NULL;
+    #if CFG_TUSB_OS == OPT_OS_PICO
+    #warning "FUCK PICO SDK"
+    #endif
     
 
     xTaskCreate( RVSWD_Task, "RVSWD_Task", 1024, NULL, 1, &xHandleRVSWD );
-    vTaskCoreAffinitySet( xHandleRVSWD, ( 1U << 0 ) );  // Affinity mask for core 0
 
-    xTaskCreate(USB_Task, "USB_Task", 4096, NULL, 1, NULL);
+    xTaskCreate(USB_Task, "USB_Task", 4096, NULL, 3, &xHandleTinyUSB);
+    //vTaskCoreAffinitySet( xHandleTinyUSB, ( 1U << 0 ) );  // Affinity mask for core 0
 
-    cmd_queue = xQueueCreate(256, sizeof(rvswd_op_t));
-    result_queue = xQueueCreate(256, sizeof(rvswd_op_result_t));
+    xTaskCreate(USB_worker, "USB worker", 4096, NULL, 1, &xHandleUSBWoker);
+    cmd_queue = xQueueCreate(20, sizeof(rvswd_op_t));
+    result_queue = xQueueCreate(20, sizeof(rvswd_op_result_t));
 
     vTaskStartScheduler();
 

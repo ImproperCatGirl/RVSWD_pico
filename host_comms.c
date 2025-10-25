@@ -29,11 +29,13 @@
  
 #include "class/vendor/vendor_device.h"
 #include "portmacro.h"
+#include "projdefs.h"
 #include "rvswd.h"
  #include "tusb.h"
 
  #include "FreeRTOS.h"
 #include "queue.h"
+#include "task.h"
  
  /* This example demonstrate HID Generic raw Input & Output.
   * It will receive data from Host (In endpoint) and echo back (Out endpoint).
@@ -83,6 +85,10 @@ extern QueueHandle_t cmd_queue;
 extern QueueHandle_t result_queue;
 
 extern rvswd_handle_t wch_handle_pio;
+
+extern TaskHandle_t xHandleUSBWoker;
+
+uint8_t cmd_len;
  //--------------------------------------------------------------------+
  // Device callbacks
  //--------------------------------------------------------------------+
@@ -114,12 +120,48 @@ extern rvswd_handle_t wch_handle_pio;
    blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
  }
  
- 
+ bool parse_next_command(const uint8_t **current_ptr, const uint8_t *end, rvswd_op_t *op) 
+ {
+    const uint8_t *current = *current_ptr;
+    if (current + 1 > end) return false;  // Need at least opcode
+    op->opcode = *current++;
+    
+    switch (op->opcode) 
+    {
+        case RVSWD_READ:
+            if (current + 2 > end) return false;  // serial + addr
+            op->serial = *current++;
+            op->params.read.addr = *current++;
+            break;
+        case RVSWD_WRITE:
+            if (current + 6 > end) return false;  // serial + addr + 4B data
+            op->serial = *current++;
+            op->params.write.addr = *current++;
+            memcpy(&op->params.write.data_to_target, current, 4);
+            current += 4;
+            break;
+        case RVSWD_RESET:
+            if (current + 1 > end) return false;  // serial
+            op->serial = *current++;
+            break;
+        default:
+            printf("Unknown opcode %02X, dropping\n", op->opcode);
+            return false;
+    }
+    
+    *current_ptr = current;
+    return true;
+}
+
  // Invoked when a bulk OUT transfer is received from the host
 void tud_vendor_rx_cb(uint8_t itf, uint8_t const* buffer, uint16_t bufsize)
 {
+    tud_vendor_n_read_flush(itf);
     if(bufsize == 0)
+    {
+      printf("ZLP detected\n");
       return;
+    }
     printf("vendor rx buffer:\n");
     for(int i = 0; i < bufsize; i ++)
     {
@@ -130,60 +172,79 @@ void tud_vendor_rx_cb(uint8_t itf, uint8_t const* buffer, uint16_t bufsize)
         }
     }
     printf("\n");
+
+
+
     if((buffer[0] != 0xE5) || (buffer[1] != 0x8F))
     {
       printf("ERROR, invalid packet, dropping\n");
       return;
     }
-    uint8_t len = buffer[2];
-    const uint8_t *current = buffer + 2;
-    for(int i = 0; i < len; i++)
+    cmd_len = buffer[2];
+    const uint8_t *current = buffer + 3;
+    printf("cmd_len = %d\n", cmd_len);
+    for(int i = 0; i < cmd_len; i++)
     {
       uint8_t opcode = *current;
       current += 1; // 1 byte opecode
+      rvswd_op_result_t res = {0};
+      
+      uint8_t local_cmd_len = buffer[2];  // Avoid global if possible
+      const uint8_t *current = buffer + 3;
+      const uint8_t *end = buffer + bufsize;
+      
+      for (int i = 0; i < local_cmd_len; i++) {
+          rvswd_op_t op = {0};
+          if (!parse_next_command(&current, end, &op)) {
+              printf("Parse error at command %d, dropping\n", i + 1);
+              return;
+          }
+          // Pass cmd_len if needed: op.batch_size = local_cmd_len; (add field to struct)
+          if(xQueueSend(cmd_queue, &op, pdMS_TO_TICKS(10)) == pdFALSE)
+          {
+            printf("queue full, discarding!\n");
+          }
+      }
+    }
+}
 
+void USB_worker(void *params)
+{
+    rvswd_op_result_t res = {0};
+    while (1)
+    {
+      if(ulTaskNotifyTake(pdTRUE, 0))
+      {
+        tud_vendor_flush();
+      }
+      xQueueReceive(result_queue, &res, portMAX_DELAY);
       uint8_t buf_tmp[10] = {0};
       uint8_t buf_tmp_len = 0;
-      rvswd_op_result_t res = {0};
-      if(opcode == 0x01) // read
+      if(res.opcode == RVSWD_WRITE)
       {
-        rvswd_op_t op_read =
+          buf_tmp_len = 2;
+          buf_tmp[0] = res.serial;
+          buf_tmp[1] = res.status;
+          // 1 byte status + 1 byte serial
+      }
+      if(res.opcode == RVSWD_READ)
+      {
+          buf_tmp_len = 6;
+          buf_tmp[0] = res.serial;
+          buf_tmp[1] = res.status;
+          memcpy(buf_tmp + 2, &res.data_from_target, sizeof(res.data_from_target));
+          // 1 byte status + 1 byte serial + 4 byte data
+      }
+      int timeout = 0;
+      while (tud_vendor_write_available() < buf_tmp_len)
+      {
+        if(timeout > 10)
         {
-          .serial = *current, 
-          .addr = *(current+1),
-          .opcode = RVSWD_READ,
-          .data_to_target = 0,
-        };
-        current += 2; // 1 byte address + 1 byte serial
-        xQueueSend(cmd_queue, &op_read, portMAX_DELAY);
-        //res.status = rvswd_pio_read(&wch_handle_pio, op_read.addr, &res.data_from_target);
-        /*buf_tmp_len = 6;
-        buf_tmp[0] = res.serial;
-        buf_tmp[1] = res.status;
-        memcpy(buf_tmp + 2, &res.data_from_target, sizeof(res.data_from_target));*/
+          printf("USB writing timed out!\n");
+        }
+        vTaskDelay(pdMS_TO_TICKS(1));
+        timeout++;
       }
-      if(opcode == 0x02) //write
-      {
-        rvswd_op_t op_write = 
-        {
-          .serial = *current, 
-          .addr = *(current+1),
-          .opcode = RVSWD_WRITE,
-          .data_to_target = 0,
-        };
-        memcpy(&op_write.data_to_target, current + 1, 4); // 32 bit value
-        current += 6; // 1 byte address + 1 byte serial + 4 byte data
-        xQueueSend(cmd_queue, &op_write, portMAX_DELAY);
-        /*res.status = rvswd_pio_write(&wch_handle_pio, op_write.addr, op_write.data_to_target);
-        buf_tmp_len = 2;
-        buf_tmp[0] = res.serial;
-        buf_tmp[1] = res.status;*/
-      }
-      if(opcode == 0x03)
-      {
-        //do nothing for now, as resetting is handled by RISC-V DMI
-      }
-      while(tud_vendor_write_available() < sizeof(buf_tmp_len)); // wait for USB
       tud_vendor_write(buf_tmp, buf_tmp_len);
     }
 }
