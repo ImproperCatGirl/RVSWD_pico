@@ -89,6 +89,16 @@ extern rvswd_handle_t wch_handle_pio;
 extern TaskHandle_t xHandleUSBWoker;
 
 uint8_t cmd_len;
+
+
+
+#define RX_BUF_SIZE 1024
+#define TX_BUF_SIZE 1024
+static uint8_t rx_buf[RX_BUF_SIZE];
+static uint8_t tx_buf[TX_BUF_SIZE];
+
+static size_t rx_len = 0;
+
  //--------------------------------------------------------------------+
  // Device callbacks
  //--------------------------------------------------------------------+
@@ -156,13 +166,13 @@ uint8_t cmd_len;
  // Invoked when a bulk OUT transfer is received from the host
 void tud_vendor_rx_cb(uint8_t itf, uint8_t const* buffer, uint16_t bufsize)
 {
-    tud_vendor_n_read_flush(itf);
+
     if(bufsize == 0)
     {
       printf("ZLP detected\n");
       return;
     }
-    printf("vendor rx buffer:\n");
+    /*printf("vendor rx buffer:\n");
     for(int i = 0; i < bufsize; i ++)
     {
         printf("%02X ", buffer[i]);
@@ -172,79 +182,129 @@ void tud_vendor_rx_cb(uint8_t itf, uint8_t const* buffer, uint16_t bufsize)
         }
     }
     printf("\n");
-
-
-
-    if((buffer[0] != 0xE5) || (buffer[1] != 0x8F))
-    {
-      printf("ERROR, invalid packet, dropping\n");
+*/
+    if (rx_len + bufsize > RX_BUF_SIZE) {
+      printf("RX buffer overflow!\n");
       return;
     }
-    cmd_len = buffer[2];
-    const uint8_t *current = buffer + 3;
-    printf("cmd_len = %d\n", cmd_len);
-    for(int i = 0; i < cmd_len; i++)
-    {
-      uint8_t opcode = *current;
-      current += 1; // 1 byte opecode
-      rvswd_op_result_t res = {0};
-      
-      uint8_t local_cmd_len = buffer[2];  // Avoid global if possible
-      const uint8_t *current = buffer + 3;
-      const uint8_t *end = buffer + bufsize;
-      
-      for (int i = 0; i < local_cmd_len; i++) {
-          rvswd_op_t op = {0};
-          if (!parse_next_command(&current, end, &op)) {
-              printf("Parse error at command %d, dropping\n", i + 1);
-              return;
-          }
-          // Pass cmd_len if needed: op.batch_size = local_cmd_len; (add field to struct)
-          if(xQueueSend(cmd_queue, &op, pdMS_TO_TICKS(10)) == pdFALSE)
-          {
-            printf("queue full, discarding!\n");
-          }
-      }
+
+    memcpy(rx_buf + rx_len, buffer, bufsize);
+    rx_len += bufsize;
+
+    size_t offset = 0;
+    bool found_magic = false;
+    while (offset + 5 <= rx_len) { // header (2) + cmd_len (1) + total_bytes (2)
+        if (rx_buf[offset] != 0xE5 || rx_buf[offset + 1] != 0x8F) {
+            // misaligned, skip until next header candidate
+            offset++;
+            continue;
+        }
+        found_magic = true;
+        cmd_len = rx_buf[offset + 2];
+        uint16_t total_bytes = rx_buf[offset + 3] | (rx_buf[offset + 4] << 8);
+        //printf("total bytes = %d\n", total_bytes);
+
+        if (offset + total_bytes > rx_len) {
+            // Wait for full logical transfer
+            break;
+        }
+        //printf("cmd_len = %d, total_bytes = %d\n", cmd_len, total_bytes);
+        // Full transfer available
+        const uint8_t *current = rx_buf + offset + 5;
+        const uint8_t *end = rx_buf + offset + total_bytes;
+
+        for (int i = 0; i < cmd_len; i++) {
+            rvswd_op_t op = {0};
+            if (!parse_next_command(&current, end, &op)) {
+                printf("Parse error at command %d, dropping\n", i + 1);
+                break;
+            }
+            xQueueSend(cmd_queue, &op, portMAX_DELAY);
+        }
+
+        offset += total_bytes; // advance past this logical transfer
     }
+    if(found_magic)
+    {
+      //printf("magic found!, offset = %d\n", offset);
+    }
+    
+    // Shift leftover bytes to the start of buffer
+    if (offset > 0) {
+        memmove(rx_buf, rx_buf + offset, rx_len - offset);
+        rx_len -= offset;
+    }
+
+    tud_vendor_n_read_flush(itf);
 }
+
 
 void USB_worker(void *params)
 {
+    static uint16_t usb_buf_len = 0;
+
     rvswd_op_result_t res = {0};
     while (1)
     {
-      if(ulTaskNotifyTake(pdTRUE, 0))
-      {
-        tud_vendor_flush();
-      }
-      xQueueReceive(result_queue, &res, portMAX_DELAY);
-      uint8_t buf_tmp[10] = {0};
-      uint8_t buf_tmp_len = 0;
-      if(res.opcode == RVSWD_WRITE)
-      {
-          buf_tmp_len = 2;
-          buf_tmp[0] = res.serial;
-          buf_tmp[1] = res.status;
-          // 1 byte status + 1 byte serial
-      }
-      if(res.opcode == RVSWD_READ)
-      {
-          buf_tmp_len = 6;
-          buf_tmp[0] = res.serial;
-          buf_tmp[1] = res.status;
-          memcpy(buf_tmp + 2, &res.data_from_target, sizeof(res.data_from_target));
-          // 1 byte status + 1 byte serial + 4 byte data
-      }
-      int timeout = 0;
-      while (tud_vendor_write_available() < buf_tmp_len)
-      {
-        if(timeout > 10)
+        // Only flush the buffer if notified that commands completed
+        if(ulTaskNotifyTake(pdTRUE, 0) || usb_buf_len >= TX_BUF_SIZE)
         {
-          printf("USB writing timed out!\n");
+            /*printf("flushing, data:\n");
+            for(int i = 0; i < usb_buf_len; i++)
+            {
+              printf("%02X ", tx_buf[i]);
+              if(i % 16 == 0)
+              {
+                printf("\n");
+              }
+            }
+            printf("\n");*/
+            if(usb_buf_len > 0)
+            {
+                int timeout = 0;
+                while (tud_vendor_write_available() < usb_buf_len)
+                {
+                    if(timeout > 10)
+                        printf("USB writing timed out!\n");
+                    vTaskDelay(pdMS_TO_TICKS(1));
+                    timeout++;
+                }
+                tud_vendor_write(tx_buf, usb_buf_len);
+                usb_buf_len = 0; // reset after flush
+            }
+            tud_vendor_write_flush();
         }
-        vTaskDelay(pdMS_TO_TICKS(1));
-        timeout++;
-      }
-      tud_vendor_write(buf_tmp, buf_tmp_len);
+
+        // Always read from the result queue and buffer
+        xQueueReceive(result_queue, &res, portMAX_DELAY);
+
+        uint8_t buf_tmp[10] = {0};
+        uint8_t buf_tmp_len = 0;
+
+        if(res.opcode == RVSWD_WRITE)
+        {
+            buf_tmp_len = 2;
+            buf_tmp[0] = res.serial;
+            buf_tmp[1] = res.status;
+        }
+        else if(res.opcode == RVSWD_READ)
+        {
+            buf_tmp_len = 6;
+            buf_tmp[0] = res.serial;
+            buf_tmp[1] = res.status;
+            memcpy(buf_tmp + 2, &res.data_from_target, sizeof(res.data_from_target));
+        }
+
+        // Append to the USB buffer
+        if(usb_buf_len + buf_tmp_len <= TX_BUF_SIZE)
+        {
+            memcpy(tx_buf + usb_buf_len, buf_tmp, buf_tmp_len);
+            usb_buf_len += buf_tmp_len;
+        }
+        else
+        {
+            printf("USB buffer overflow! buffer is %d byte long!\n", usb_buf_len + buf_tmp_len);
+            usb_buf_len = 0;
+        }
     }
 }

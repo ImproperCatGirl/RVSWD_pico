@@ -105,23 +105,24 @@ void RVSWD_Task(void *params)
         if (cmd.opcode == RVSWD_WRITE) 
         {
             res.status = rvswd_pio_write(&wch_handle_pio, cmd.params.write.addr, cmd.params.write.data_to_target);
-            printf("serial = %d, opcode = WRITE, address = %d\n", cmd.serial, cmd.params.write.addr);
+            //printf("serial = %d, opcode = WRITE, address = %d\n", cmd.serial, cmd.params.write.addr);
         } 
         else if (cmd.opcode == RVSWD_READ) 
         {
             res.status = rvswd_pio_read(&wch_handle_pio, cmd.params.read.addr, &res.data_from_target);
-            printf("serial = %d, opcode = READ, address = %d\n", cmd.serial, cmd.params.read.addr);
+            //printf("serial = %d, opcode = READ, address = %d\n", cmd.serial, cmd.params.read.addr);
         } 
         else if (cmd.opcode == RVSWD_RESET) {
             res.status = RVSWD_OK;
             rvswd_pio_reset(&wch_handle_pio);
         }
-        //Notify before send for last command
+
         if (cmd.serial == cmd_len) {  // Or cmd.batch_size if added
             xTaskNotifyGive(xHandleUSBWoker);
         }
 
         xQueueSend(result_queue, &res, portMAX_DELAY);
+
 
     }
 }
@@ -138,7 +139,7 @@ void USB_Task(void *params)
     while(1)
     {
         tud_task();
-        printf("TinyUSB still alive\n");
+        //printf("TinyUSB still alive\n");
     }
     vTaskDelete(NULL);
 }

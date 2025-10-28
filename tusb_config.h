@@ -65,7 +65,7 @@
  #endif
  
  #ifndef CFG_TUSB_DEBUG
- #define CFG_TUSB_DEBUG        2
+ #define CFG_TUSB_DEBUG        0
  #endif
  
  // Enable Device stack
@@ -106,8 +106,8 @@
  
 #define CFG_TUD_VENDOR_EP_BUFSIZE    64
 
-#define CFG_TUD_VENDOR_RX_BUFSIZE   256  // RX buffer size (for receiving larger payloads)
-#define CFG_TUD_VENDOR_TX_BUFSIZE   256  // TX buffer size (for sending larger payloads; increase for chunking large responses)
+#define CFG_TUD_VENDOR_RX_BUFSIZE   1100 // RX buffer size (for receiving larger payloads)
+#define CFG_TUD_VENDOR_TX_BUFSIZE   1100  // TX buffer size (for sending larger payloads; increase for chunking large responses)
  
  #ifdef __cplusplus
   }
