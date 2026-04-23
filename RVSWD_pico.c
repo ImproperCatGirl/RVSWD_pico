@@ -62,16 +62,9 @@ static uint8_t const ch32v20x_writemem[] = {0x88, 0xc1, 0x02, 0x90};
 
 rvswd_handle_t wch_handle_pio;
 
-QueueHandle_t cmd_queue;
-
-QueueHandle_t result_queue;
-
-
-TaskHandle_t xHandleRVSWD = NULL;
-
-TaskHandle_t xHandleUSBWoker = NULL;
-
 TaskHandle_t xHandleTinyUSB = NULL;
+
+TaskHandle_t xHandleDDMI = NULL;
 
 extern uint8_t cmd_len;
 
@@ -92,41 +85,6 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask,
 }
 
 
-void RVSWD_Task(void *params)
-{
-    while(1)
-    {
-        rvswd_op_t cmd = {0};
-        rvswd_op_result_t res = {0};
-        xQueueReceive(cmd_queue, &cmd, portMAX_DELAY);
-        res.opcode = cmd.opcode;
-        res.serial = cmd.serial;
-        
-        if (cmd.opcode == RVSWD_WRITE) 
-        {
-            res.status = rvswd_pio_write(&wch_handle_pio, cmd.params.write.addr, cmd.params.write.data_to_target);
-            //printf("serial = %d, opcode = WRITE, address = %d\n", cmd.serial, cmd.params.write.addr);
-        } 
-        else if (cmd.opcode == RVSWD_READ) 
-        {
-            res.status = rvswd_pio_read(&wch_handle_pio, cmd.params.read.addr, &res.data_from_target);
-            //printf("serial = %d, opcode = READ, address = %d\n", cmd.serial, cmd.params.read.addr);
-        } 
-        else if (cmd.opcode == RVSWD_RESET) {
-            res.status = RVSWD_OK;
-            rvswd_pio_reset(&wch_handle_pio);
-        }
-
-        if (cmd.serial == cmd_len) {  // Or cmd.batch_size if added
-            xTaskNotifyGive(xHandleUSBWoker);
-        }
-
-        xQueueSend(result_queue, &res, portMAX_DELAY);
-
-
-    }
-}
-
 void USB_Task(void *params)
 {
      // init device stack on configured roothub port
@@ -143,7 +101,6 @@ void USB_Task(void *params)
     }
     vTaskDelete(NULL);
 }
-
 
 int main()
 {
@@ -162,7 +119,7 @@ int main()
     gpio_set_dir(LOGIC_ANALYZER_HELPER_PIN, GPIO_OUT);
     gpio_put(LOGIC_ANALYZER_HELPER_PIN, 0);
 
-    printf("PIO mode test\n");
+    printf("PIO mode test\n\n\n\n\n\n\n\n\n\n");
     wch_handle_pio.swclk = 7;
     wch_handle_pio.swdio = 8;
     wch_handle_pio.logic_helper_pin = LOGIC_ANALYZER_HELPER_PIN;
@@ -183,16 +140,11 @@ int main()
     #if CFG_TUSB_OS == OPT_OS_PICO
     #warning "FUCK PICO SDK"
     #endif
-    
-
-    xTaskCreate( RVSWD_Task, "RVSWD_Task", 1024, NULL, 1, &xHandleRVSWD );
+    busy_wait_ms(500);
 
     xTaskCreate(USB_Task, "USB_Task", 4096, NULL, 3, &xHandleTinyUSB);
-    //vTaskCoreAffinitySet( xHandleTinyUSB, ( 1U << 0 ) );  // Affinity mask for core 0
 
-    xTaskCreate(USB_worker, "USB worker", 4096, NULL, 1, &xHandleUSBWoker);
-    cmd_queue = xQueueCreate(20, sizeof(rvswd_op_t));
-    result_queue = xQueueCreate(20, sizeof(rvswd_op_result_t));
+    xTaskCreate(ddmi_worker_task, "DDMI worker", 512, NULL, 4, &xHandleDDMI);
 
     vTaskStartScheduler();
 

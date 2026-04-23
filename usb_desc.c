@@ -30,7 +30,7 @@
  //--------------------------------------------------------------------+
  // Device Descriptors
  //--------------------------------------------------------------------+
- tusb_desc_device_t const desc_device =
+ tusb_desc_device_t const desc_device_ =
  {
      .bLength            = sizeof(tusb_desc_device_t),
      .bDescriptorType    = TUSB_DESC_DEVICE,
@@ -41,7 +41,7 @@
      .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
  
      .idVendor           = 0xCAFE, // Custom VID
-     .idProduct          = 0x8010, // Custom PID
+     .idProduct          = 0x4002, // Custom PID
      .bcdDevice          = 0x0100,
  
      .iManufacturer      = 0x01,
@@ -50,6 +50,26 @@
  
      .bNumConfigurations = 0x01
  };
+ tusb_desc_device_t const desc_device = {
+  .bLength            = sizeof(tusb_desc_device_t),
+  .bDescriptorType    = TUSB_DESC_DEVICE,
+  .bcdUSB             = 0x0200,         // USB 2.1 (Needed for BOS/WinUSB)
+  .bDeviceClass       = 0xEF,           // Miscellaneous
+  .bDeviceSubClass    = 0x02,           // Common Class
+  //.bDeviceProtocol    = 0x01,           // Interface Association Descriptor
+  .bDeviceProtocol    = MISC_PROTOCOL_IAD,
+  .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
+  
+  .idVendor           = 0xcafe,         // Your VID
+  .idProduct          = 0x4002,         // Your PID
+  .bcdDevice          = 0x0100,
+  
+  .iManufacturer      = 0x01,
+  .iProduct           = 0x02,           // String "CMSIS-DAP" is usually here
+  .iSerialNumber      = 0x03,
+  .bNumConfigurations = 0x01
+};
+
  
  // Invoked when received GET DEVICE DESCRIPTOR
  // Application return pointer to descriptor

@@ -128,7 +128,7 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 
     // Clock divider (e.g., 125MHz / 10MHz = 12.5)
     float pio_clk_div = (float)clock_get_hz(clk_sys) / PIO_CLK_HZ;
-    pio_clk_div=10;
+    pio_clk_div=1000;
     sm_config_set_clkdiv(&c, pio_clk_div);
 
     // FIFO configuration
@@ -180,7 +180,7 @@ rvswd_result_t rvswd_pio_stop(rvswd_handle_t* handle) {
 }
  
 rvswd_result_t rvswd_pio_reset(rvswd_handle_t* handle) {
-    rvswd_send_cmd(handle, rvswd_io_offset_reset, 100, true);
+    rvswd_send_cmd(handle, rvswd_io_offset_reset, 110, true);
     return RVSWD_OK;
 }
  

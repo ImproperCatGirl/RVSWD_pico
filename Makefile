@@ -257,30 +257,6 @@ RVSWD_bitbang_CPU.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/RVSWD_bitbang_CPU.c.s
 .PHONY : RVSWD_bitbang_CPU.c.s
 
-RVSWD_bitbang_CPU_2.o: RVSWD_bitbang_CPU_2.c.o
-.PHONY : RVSWD_bitbang_CPU_2.o
-
-# target to build an object file
-RVSWD_bitbang_CPU_2.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/RVSWD_bitbang_CPU_2.c.o
-.PHONY : RVSWD_bitbang_CPU_2.c.o
-
-RVSWD_bitbang_CPU_2.i: RVSWD_bitbang_CPU_2.c.i
-.PHONY : RVSWD_bitbang_CPU_2.i
-
-# target to preprocess a source file
-RVSWD_bitbang_CPU_2.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/RVSWD_bitbang_CPU_2.c.i
-.PHONY : RVSWD_bitbang_CPU_2.c.i
-
-RVSWD_bitbang_CPU_2.s: RVSWD_bitbang_CPU_2.c.s
-.PHONY : RVSWD_bitbang_CPU_2.s
-
-# target to generate assembly for a file
-RVSWD_bitbang_CPU_2.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/RVSWD_bitbang_CPU_2.c.s
-.PHONY : RVSWD_bitbang_CPU_2.c.s
-
 RVSWD_pico.o: RVSWD_pico.c.o
 .PHONY : RVSWD_pico.o
 
@@ -1971,30 +1947,6 @@ home/meow/FreeRTOS-Kernel/timers.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyusb_upstream.dir/build.make CMakeFiles/tinyusb_upstream.dir/home/meow/FreeRTOS-Kernel/timers.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/home/meow/FreeRTOS-Kernel/timers.c.s
 .PHONY : home/meow/FreeRTOS-Kernel/timers.c.s
-
-host_comms.o: host_comms.c.o
-.PHONY : host_comms.o
-
-# target to build an object file
-host_comms.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/host_comms.c.o
-.PHONY : host_comms.c.o
-
-host_comms.i: host_comms.c.i
-.PHONY : host_comms.i
-
-# target to preprocess a source file
-host_comms.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/host_comms.c.i
-.PHONY : host_comms.c.i
-
-host_comms.s: host_comms.c.s
-.PHONY : host_comms.s
-
-# target to generate assembly for a file
-host_comms.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/host_comms.c.s
-.PHONY : host_comms.c.s
 
 tinyusb/src/class/audio/audio_device.o: tinyusb/src/class/audio/audio_device.c.o
 .PHONY : tinyusb/src/class/audio/audio_device.o
@@ -3796,6 +3748,30 @@ tinyusb/src/typec/usbc.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinyusb_upstream.dir/build.make CMakeFiles/tinyusb_upstream.dir/tinyusb/src/typec/usbc.c.s
 .PHONY : tinyusb/src/typec/usbc.c.s
 
+usb_comm.o: usb_comm.c.o
+.PHONY : usb_comm.o
+
+# target to build an object file
+usb_comm.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/usb_comm.c.o
+.PHONY : usb_comm.c.o
+
+usb_comm.i: usb_comm.c.i
+.PHONY : usb_comm.i
+
+# target to preprocess a source file
+usb_comm.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/usb_comm.c.i
+.PHONY : usb_comm.c.i
+
+usb_comm.s: usb_comm.c.s
+.PHONY : usb_comm.s
+
+# target to generate assembly for a file
+usb_comm.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RVSWD_pico.dir/build.make CMakeFiles/RVSWD_pico.dir/usb_comm.c.s
+.PHONY : usb_comm.c.s
+
 usb_desc.o: usb_desc.c.o
 .PHONY : usb_desc.o
 
@@ -3840,9 +3816,6 @@ help:
 	@echo "... RVSWD_bitbang_CPU.o"
 	@echo "... RVSWD_bitbang_CPU.i"
 	@echo "... RVSWD_bitbang_CPU.s"
-	@echo "... RVSWD_bitbang_CPU_2.o"
-	@echo "... RVSWD_bitbang_CPU_2.i"
-	@echo "... RVSWD_bitbang_CPU_2.s"
 	@echo "... RVSWD_pico.o"
 	@echo "... RVSWD_pico.i"
 	@echo "... RVSWD_pico.s"
@@ -4040,9 +4013,6 @@ help:
 	@echo "... home/meow/FreeRTOS-Kernel/timers.o"
 	@echo "... home/meow/FreeRTOS-Kernel/timers.i"
 	@echo "... home/meow/FreeRTOS-Kernel/timers.s"
-	@echo "... host_comms.o"
-	@echo "... host_comms.i"
-	@echo "... host_comms.s"
 	@echo "... tinyusb/src/class/audio/audio_device.o"
 	@echo "... tinyusb/src/class/audio/audio_device.i"
 	@echo "... tinyusb/src/class/audio/audio_device.s"
@@ -4268,6 +4238,9 @@ help:
 	@echo "... tinyusb/src/typec/usbc.o"
 	@echo "... tinyusb/src/typec/usbc.i"
 	@echo "... tinyusb/src/typec/usbc.s"
+	@echo "... usb_comm.o"
+	@echo "... usb_comm.i"
+	@echo "... usb_comm.s"
 	@echo "... usb_desc.o"
 	@echo "... usb_desc.i"
 	@echo "... usb_desc.s"

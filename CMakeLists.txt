@@ -95,8 +95,8 @@ target_link_libraries(tinyusb_upstream
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(RVSWD_pico RVSWD_pico.c  RVSWD_bitbang_CPU.c RVSWD_bitbang_CPU_2.c RVSWD_pio.c
-usb_desc.c host_comms.c )
+add_executable(RVSWD_pico RVSWD_pico.c  RVSWD_bitbang_CPU.c RVSWD_pio.c
+usb_desc.c  usb_comm.c)
 
 pico_set_program_name(RVSWD_pico "RVSWD_pico")
 pico_set_program_version(RVSWD_pico "0.1")

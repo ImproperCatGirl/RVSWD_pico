@@ -519,7 +519,7 @@ DOXYGEN_DOT_EXECUTABLE-ADVANCED:INTERNAL=1
 DOXYGEN_EXECUTABLE-ADVANCED:INTERNAL=1
 FAMILY_MCUS:INTERNAL=RP2040
 //Details about finding Python3
-FIND_PACKAGE_MESSAGE_DETAILS_Python3:INTERNAL=[/usr/bin/python3.13][cfound components: Interpreter ][v3.13.7()]
+FIND_PACKAGE_MESSAGE_DETAILS_Python3:INTERNAL=[/usr/bin/python3.13][cfound components: Interpreter ][v3.13.11()]
 PICO_32BIT:INTERNAL=1
 PICO_ARM:INTERNAL=1
 PICO_BOOT_STAGE2_DIR:INTERNAL=/home/meow/.pico-sdk/sdk/2.2.0/src/rp2040/boot_stage2
@@ -554,7 +554,7 @@ _Python3_Development_REASON_FAILURE:INTERNAL=
 //Path to a program.
 _Python3_EXECUTABLE:INTERNAL=/usr/bin/python3.13
 //Python3 Properties
-_Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;13;7;32;64;;;abi3;/usr/lib64/python3.13;/usr/local/lib64/python3.13;/usr/local/lib/python3.13/site-packages;/usr/local/lib64/python3.13/site-packages
+_Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;13;11;32;64;;;abi3;/usr/lib64/python3.13;/usr/local/lib64/python3.13;/usr/local/lib/python3.13/site-packages;/usr/local/lib64/python3.13/site-packages
 _Python3_INTERPRETER_SIGNATURE:INTERNAL=c92b3d9e6f476adbdafd9eb663c4620e
 //NumPy reason failure
 _Python3_NumPy_REASON_FAILURE:INTERNAL=
