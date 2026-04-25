@@ -25,7 +25,7 @@
 //
 
 // Reverses endianness for a 32-bit unsigned integer
-uint32_t reverse_endian_32(uint32_t val) {
+uint32_t inline reverse_endian_32(uint32_t val) {
     return ((val & 0x000000FF) << 24) |
            ((val & 0x0000FF00) << 8)  |
            ((val & 0x00FF0000) >> 8)  |
@@ -59,7 +59,7 @@ static void rvswd_send_cmd(rvswd_handle_t* handle, uint cmd_offset, uint bit_cou
 /**
  * @brief Write N bits using PIO (max 32).
  */
-static void rvswd_pio_write_bits(rvswd_handle_t* handle, uint32_t data, uint8_t bit_count) {
+static inline void rvswd_pio_write_bits(rvswd_handle_t* handle, uint32_t data, uint8_t bit_count) {
     // Send INVERTED data for open-drain emulation
     pio_interrupt_clear(handle->pio, 0);
     // Left-align data since PIO shifts MSB-first (shift_left=true)
@@ -77,7 +77,7 @@ static void rvswd_pio_write_bits(rvswd_handle_t* handle, uint32_t data, uint8_t 
 /**
  * @brief Read N bits using PIO (max 32).
  */
-static uint32_t rvswd_pio_read_bits(rvswd_handle_t* handle, uint8_t bit_count) {
+static inline uint32_t rvswd_pio_read_bits(rvswd_handle_t* handle, uint8_t bit_count) {
 
     pio_interrupt_clear(handle->pio, 1);
 
@@ -161,7 +161,7 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 }
  
 // The bit-bang functions are now just PIO commands
-rvswd_result_t rvswd_pio_start(rvswd_handle_t* handle) {
+rvswd_result_t inline rvswd_pio_start(rvswd_handle_t* handle) {
 
     gpio_put(handle->logic_helper_pin, 1);
     rvswd_send_cmd(handle, rvswd_io_offset_start, 0, true);
@@ -170,7 +170,7 @@ rvswd_result_t rvswd_pio_start(rvswd_handle_t* handle) {
     return RVSWD_OK;
 }
  
-rvswd_result_t rvswd_pio_stop(rvswd_handle_t* handle) {
+rvswd_result_t inline rvswd_pio_stop(rvswd_handle_t* handle) {
 
     gpio_put(handle->logic_helper_pin, 1);
     rvswd_send_cmd(handle, rvswd_io_offset_stop, 0, true);
@@ -193,7 +193,7 @@ rvswd_result_t rvswd_pio_reset(rvswd_handle_t* handle) {
 // (These are now much cleaner)
 //
 
-rvswd_result_t rvswd_pio_write(rvswd_handle_t* handle, uint8_t reg, uint32_t value) {
+rvswd_result_t inline rvswd_pio_write(rvswd_handle_t* handle, uint8_t reg, uint32_t value) {
     rvswd_pio_start(handle);
  
     // ADDR HOST
@@ -233,7 +233,7 @@ rvswd_result_t rvswd_pio_write(rvswd_handle_t* handle, uint8_t reg, uint32_t val
     return RVSWD_OK;
 }
  
-rvswd_result_t rvswd_pio_read(rvswd_handle_t* handle, uint8_t reg, uint32_t* value) {
+rvswd_result_t inline rvswd_pio_read(rvswd_handle_t* handle, uint8_t reg, uint32_t* value) {
     bool parity;
  
     rvswd_pio_start(handle);

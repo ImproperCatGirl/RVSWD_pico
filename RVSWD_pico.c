@@ -129,7 +129,6 @@ rvswd_result_t ch32v20x_halt_microprocessor(rvswd_handle_t* handle) {
             return false;
         }
         timeout--;
-        //busy_wait_ms(10);
     }
     printf("timeout_after = %d\n", timeout);
     

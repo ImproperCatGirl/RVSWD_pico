@@ -134,6 +134,10 @@ void ddmi_process_with_chain() {
     {
         rvswd_pio_reset(&wch_handle_pio);
 
+        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x80000001);  // Make the debug module work properly
+        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x80000001);  // Initiate a halt request
+        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x00000001);  // Clear the halt request
+        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x00000003);  // Initiate a core reset request
         ch32v20x_halt_microprocessor(&wch_handle_pio);
         ch32v20x_resume_microprocessor(&wch_handle_pio);
         return;
@@ -156,9 +160,6 @@ void ddmi_process_with_chain() {
                      * the hart to be halted post-reset (reset_halt=1).
                      */
                      printf("OpenOCD is in the while(1) loop in deassert_reset.\n");
-
-                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
-                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
                     val |= (DS_ALLHAVERESET | DS_ANYHAVERESET |
                             DS_ALLHALTED    | DS_ANYHALTED);
 
@@ -171,7 +172,6 @@ void ddmi_process_with_chain() {
     
         } else 
         { // WRITE
-            bool bypass = 0;
             // --- WORKAROUND: DMCONTROL (0x10) Hartsel Masking ---
             if (addr == RISCV_REG_DMCONTROL) {
                 // OpenOCD tries to probe 1024 harts because WCH implements 
@@ -200,7 +200,6 @@ void ddmi_process_with_chain() {
             int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
             if(in_reset_halt)
             {
-                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
                 rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
                 vTaskDelay(pdMS_TO_TICKS(10));
             }

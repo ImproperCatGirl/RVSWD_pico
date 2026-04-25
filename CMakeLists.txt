@@ -26,7 +26,7 @@ endif()
 set(PICO_BOARD pico CACHE STRING "Board type")
 
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -96,7 +96,7 @@ target_link_libraries(tinyusb_upstream
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(RVSWD_pico RVSWD_pico.c  RVSWD_bitbang_CPU.c RVSWD_pio.c
-usb_desc.c  usb_comm.c)
+usb_desc.c  rv_ddmi.c)
 
 pico_set_program_name(RVSWD_pico "RVSWD_pico")
 pico_set_program_version(RVSWD_pico "0.1")
