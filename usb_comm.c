@@ -113,6 +113,7 @@ static enum {
 #define DS_ANYHAVERESET        (1 << 18)
 // State tracking for the Reset Lifecycle
 static bool in_reset_polling_phase = false;
+static bool in_reset_halt = false;
 
 static uint32_t pool_idx = 0;
 static uint32_t response_pool[100];
@@ -155,8 +156,12 @@ void ddmi_process_with_chain() {
                      * the hart to be halted post-reset (reset_halt=1).
                      */
                      printf("OpenOCD is in the while(1) loop in deassert_reset.\n");
-                    val |= (DS_ALLHAVERESET | DS_ANYHAVERESET | 
+
+                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
+                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
+                    val |= (DS_ALLHAVERESET | DS_ANYHAVERESET |
                             DS_ALLHALTED    | DS_ANYHALTED);
+
                 }
             }
             // Abstractauto masking (keep this for stability)
@@ -179,24 +184,27 @@ void ddmi_process_with_chain() {
                 if (data & DM_NDMRESET) {
                     printf("RESETTING!\n");
                     in_reset_polling_phase = true;
+                    if(data & DM_HALTREQ)
+                    {
+                        printf("Halt pending!\n");
+                        in_reset_halt = true;
+                    }
                 }
                 // 3. Detect "ACKHAVERESET" (The end of deassert_reset)
                 if (data & DM_ACKHAVERESET) {
                     printf("ACK-ing\n");
                     in_reset_polling_phase = false;
+                    in_reset_halt = false;
                 }
             }
-
-            if(addr == RISCV_REG_DMCONTROL && (data & DM_NDMRESET) && (data & DM_HALTREQ))
+            int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+            if(in_reset_halt)
             {
+                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
                 rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
-                rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
-                bypass = 1;
+                vTaskDelay(pdMS_TO_TICKS(10));
             }
-            if(!bypass)
-            {
-                int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
-            }
+            
             //printf("%08X write %08X stat = %d\n", addr, data, stat);
             response_pool[total_responses_queued++] = 0x00000000;
         }

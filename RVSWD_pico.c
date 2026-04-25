@@ -113,12 +113,14 @@ rvswd_result_t ch32v20x_halt_microprocessor(rvswd_handle_t* handle) {
     rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
     rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
 
-    // Get the debug module status information, check rdata[9:8], if the value is 0b11,
+// Get the debug module status information, check rdata[9:8], if the value is 0b11,
     // it means the processor enters the halt state normally. Otherwise try again.
-    uint8_t timeout = 5;
+    int timeout = 100;
+    printf("timeout_init = %d\n", timeout);
     while (1) {
         uint32_t value;
-        rvswd_pio_read(handle, CH32_REG_DEBUG_DMSTATUS, &value);
+        int ret = rvswd_pio_read(handle, CH32_REG_DEBUG_DMSTATUS, &value);
+        if(ret) printf("read failed at timeout = %d!\n", timeout);
         if (((value >> 8) & 0b11) == 0b11) {  // Check that processor has entered halted state
             break;
         }
@@ -127,8 +129,10 @@ rvswd_result_t ch32v20x_halt_microprocessor(rvswd_handle_t* handle) {
             return false;
         }
         timeout--;
-        busy_wait_ms(10);
+        //busy_wait_ms(10);
     }
+    printf("timeout_after = %d\n", timeout);
+    
 
     rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
     printf( "Microprocessor halted");
@@ -148,6 +152,7 @@ rvswd_result_t ch32v20x_resume_microprocessor(rvswd_handle_t* handle) {
         uint32_t value;
         rvswd_pio_read(handle, CH32_REG_DEBUG_DMSTATUS, &value);
         if ((((value >> 10) & 0b11) == 0b11)) {
+            printf("dmstatus value after resume succ = %08X\n", value);
             break;
         }
         if (timeout == 0) {

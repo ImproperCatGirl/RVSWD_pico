@@ -10,3 +10,5 @@ build
 *.dis
 *.map
 *.hex
+*.gdb
+*.bin
