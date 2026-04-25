@@ -1,3 +1,8 @@
+// Portions of this project are derived from Project X
+// Copyright (c) 2025 Nicolai Electronics
+
+
+
 #include <hardware/gpio.h>
 #include <hardware/structs/io_bank0.h>
 #include <hardware/timer.h>
@@ -22,6 +27,7 @@
 #include "tusb_config.h"
 
 #include "host_comms.h"
+
 
 #define CH32_REG_DEBUG_DATA0        0x04  // Data register 0, can be used for temporary storage of data
 #define CH32_REG_DEBUG_DATA1        0x05  // Data register 1, can be used for temporary storage of data
@@ -102,6 +108,115 @@ void USB_Task(void *params)
     vTaskDelete(NULL);
 }
 
+
+rvswd_result_t ch32v20x_halt_microprocessor(rvswd_handle_t* handle) {
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
+
+    // Get the debug module status information, check rdata[9:8], if the value is 0b11,
+    // it means the processor enters the halt state normally. Otherwise try again.
+    uint8_t timeout = 5;
+    while (1) {
+        uint32_t value;
+        rvswd_pio_read(handle, CH32_REG_DEBUG_DMSTATUS, &value);
+        if (((value >> 8) & 0b11) == 0b11) {  // Check that processor has entered halted state
+            break;
+        }
+        if (timeout == 0) {
+            printf( "Failed to halt microprocessor, DMSTATUS=%" PRIx32, value);
+            return false;
+        }
+        timeout--;
+        busy_wait_ms(10);
+    }
+
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
+    printf( "Microprocessor halted");
+    return RVSWD_OK;
+}
+
+rvswd_result_t ch32v20x_resume_microprocessor(rvswd_handle_t* handle) {
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x40000001);  // Initiate a resume request
+
+    // Get the debug module status information, check rdata[17:16],
+    // if the value is 0b11, it means the processor has recovered.
+    uint8_t timeout = 5;
+    while (1) {
+        uint32_t value;
+        rvswd_pio_read(handle, CH32_REG_DEBUG_DMSTATUS, &value);
+        if ((((value >> 10) & 0b11) == 0b11)) {
+            break;
+        }
+        if (timeout == 0) {
+            printf( "Failed to resume microprocessor, DMSTATUS=%" PRIx32, value);
+            return RVSWD_FAIL;
+        }
+        timeout--;
+        busy_wait_ms(10);
+    }
+    return RVSWD_OK;
+}
+
+rvswd_result_t ch32v20x_reset_microprocessor_and_run(rvswd_handle_t* handle) {
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Make the debug module work properly
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x80000001);  // Initiate a halt request
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000003);  // Initiate a core reset request
+
+    uint8_t timeout = 5;
+    while (1) {
+        uint32_t value;
+        rvswd_pio_read(handle, CH32_REG_DEBUG_DMSTATUS, &value);
+        if (((value >> 18) & 0b11) == 0b11) {  // Check that processor has been reset
+            break;
+        }
+        if (timeout == 0) {
+            printf("Failed to reset microprocessor");
+            return RVSWD_FAIL;
+        }
+        timeout--;
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the core reset request
+    busy_wait_ms(10);
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x10000001);  // Clear the core reset status signal
+    busy_wait_ms(10);
+    rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the core reset status signal clear request
+
+
+    return RVSWD_OK;
+}
+
+
+bool ch32v20x_write_cpu_reg(rvswd_handle_t* handle, uint16_t regno, uint32_t value) {
+    uint32_t command = regno         // Register to access.
+                       | (1 << 16)   // Write access.
+                       | (1 << 17)   // Perform transfer.
+                       | (2 << 20)   // 32-bit register access.
+                       | (0 << 24);  // Access register command.
+
+    rvswd_write(handle, CH32_REG_DEBUG_DATA0, value);
+    rvswd_write(handle, CH32_REG_DEBUG_COMMAND, command);
+    return true;
+}
+
+bool ch32v20x_read_cpu_reg(rvswd_handle_t* handle, uint16_t regno, uint32_t* value_out) {
+    uint32_t command = regno         // Register to access.
+                       | (0 << 16)   // Read access.
+                       | (1 << 17)   // Perform transfer.
+                       | (2 << 20)   // 32-bit register access.
+                       | (0 << 24);  // Access register command.
+
+    rvswd_write(handle, CH32_REG_DEBUG_COMMAND, command);
+    rvswd_read(handle, CH32_REG_DEBUG_DATA0, value_out);
+    return true;
+}
+
+
 int main()
 {
     stdio_init_all();
@@ -142,6 +257,12 @@ int main()
     #endif
     busy_wait_ms(500);
 
+    ch32v20x_halt_microprocessor(&wch_handle_pio);
+    //ch32v20x_resume_microprocessor(&wch_handle_pio);
+    ch32v20x_resume_microprocessor(&wch_handle_pio);
+    
+    //wch_power_on_reset_halt(&wch_handle_pio);
+    //wch_test_robust_halt_and_read(&wch_handle_pio);
     xTaskCreate(USB_Task, "USB_Task", 4096, NULL, 3, &xHandleTinyUSB);
 
     xTaskCreate(ddmi_worker_task, "DDMI worker", 512, NULL, 4, &xHandleDDMI);

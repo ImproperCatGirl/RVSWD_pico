@@ -14,6 +14,7 @@
 #include "queue.h"
 #include "task.h"
 
+#include "misc.h"
 
 enum  {
     BLINK_NOT_MOUNTED = 250,
@@ -86,6 +87,33 @@ void ddmi_worker_task(void *pvParameters)
     }
 }
 
+// Internal tracking for the reset state machine
+static enum {
+    IDLE,
+    RESET_SEQUENCE_TRIGGERED,
+    WAITING_FOR_OPENOCD_ACK
+} reset_state = IDLE;
+
+// RISC-V Debug Module Register Addresses
+#define RISCV_REG_DMCONTROL    0x10
+#define RISCV_REG_DMSTATUS     0x11
+#define RISCV_REG_ABSTRACTAUTO 0x18
+
+// DMCONTROL Bit Masks
+#define DM_DMACTIVE            (1 << 0)
+#define DM_NDMRESET            (1 << 1)
+#define DM_ACKHAVERESET        (1 << 28)
+#define DM_HALTREQ             (1 << 31)
+#define DM_HARTSEL_MASK        0x03FF0000
+
+// DMSTATUS Bit Masks
+#define DS_ALLHALTED           (1 << 9)
+#define DS_ANYHALTED           (1 << 8)
+#define DS_ALLHAVERESET        (1 << 19)
+#define DS_ANYHAVERESET        (1 << 18)
+// State tracking for the Reset Lifecycle
+static bool in_reset_polling_phase = false;
+
 static uint32_t pool_idx = 0;
 static uint32_t response_pool[100];
 static uint8_t  total_responses_queued = 0;
@@ -101,28 +129,77 @@ void ddmi_process_with_chain() {
     uint8_t op_count  = pkt[1];
     uint8_t *payload  = pkt + 2;
 
-    // --- PHASE 1: EXECUTE ON THE FLY ---
+    if(op_count == 255 && pkt[2] == 'R')
+    {
+        rvswd_pio_reset(&wch_handle_pio);
+
+        ch32v20x_halt_microprocessor(&wch_handle_pio);
+        ch32v20x_resume_microprocessor(&wch_handle_pio);
+        return;
+    }   
+
     for (uint8_t i = 0; i < op_count; i++) {
         uint8_t *cmd = payload + (i * 9);
         
-        // Parse: Type, Addr, Data (Manual shifts for speed/alignment)
         uint32_t addr = cmd[1] | (cmd[2] << 8) | (cmd[3] << 16) | (cmd[4] << 24);
         uint32_t data = cmd[5] | (cmd[6] << 8) | (cmd[7] << 16) | (cmd[8] << 24);
-        rvswd_op_t *op;
-
+    
         if (cmd[0] == 'r') {
             uint32_t val;
             int stat = rvswd_pio_read(&wch_handle_pio, addr, &val);
+            if (addr == RISCV_REG_DMSTATUS) {
+                if (in_reset_polling_phase) {
+                    /* * OpenOCD is in the while(1) loop in deassert_reset.
+                     * We must force ALLHAVERESET so it proceeds to ACK.
+                     * We also force HALTED bits because OpenOCD expects 
+                     * the hart to be halted post-reset (reset_halt=1).
+                     */
+                     printf("OpenOCD is in the while(1) loop in deassert_reset.\n");
+                    val |= (DS_ALLHAVERESET | DS_ANYHAVERESET | 
+                            DS_ALLHALTED    | DS_ANYHALTED);
+                }
+            }
+            // Abstractauto masking (keep this for stability)
+            if (addr == RISCV_REG_ABSTRACTAUTO) val = 0;
             response_pool[total_responses_queued++] = val;
-            printf("%08X read result = %08X, stat = %d\n", addr, val, stat);
-        } else {
-            //riscv_dmi_write_poll(addr, data, 1000);
-            int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+            //printf("%08X read result = %08X, stat = %d\n", addr, val, stat);
+    
+        } else 
+        { // WRITE
+            bool bypass = 0;
+            // --- WORKAROUND: DMCONTROL (0x10) Hartsel Masking ---
+            if (addr == RISCV_REG_DMCONTROL) {
+                // OpenOCD tries to probe 1024 harts because WCH implements 
+                // all hartsel bits. Force all hartsel bits to 0 (Hart 0).
+                data &= ~DM_HARTSEL_MASK; 
+            }
 
-            printf("%08X write %08X stat = %d\n", addr, data, stat);
+            if(addr == RISCV_REG_DMCONTROL)
+            {
+                if (data & DM_NDMRESET) {
+                    printf("RESETTING!\n");
+                    in_reset_polling_phase = true;
+                }
+                // 3. Detect "ACKHAVERESET" (The end of deassert_reset)
+                if (data & DM_ACKHAVERESET) {
+                    printf("ACK-ing\n");
+                    in_reset_polling_phase = false;
+                }
+            }
+
+            if(addr == RISCV_REG_DMCONTROL && (data & DM_NDMRESET) && (data & DM_HALTREQ))
+            {
+                rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
+                rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
+                bypass = 1;
+            }
+            if(!bypass)
+            {
+                int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+            }
+            //printf("%08X write %08X stat = %d\n", addr, data, stat);
             response_pool[total_responses_queued++] = 0x00000000;
         }
-        busy_wait_ms(5);
     }
 
     // --- PHASE 2: BURST RESPONSES ---

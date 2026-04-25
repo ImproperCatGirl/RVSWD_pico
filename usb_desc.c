@@ -41,7 +41,7 @@
      .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
  
      .idVendor           = 0xCAFE, // Custom VID
-     .idProduct          = 0x4002, // Custom PID
+     .idProduct          = 0x4008, // Custom PID
      .bcdDevice          = 0x0100,
  
      .iManufacturer      = 0x01,
@@ -61,7 +61,7 @@
   .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
   
   .idVendor           = 0xcafe,         // Your VID
-  .idProduct          = 0x4002,         // Your PID
+  .idProduct          = 0x4008,         // Your PID
   .bcdDevice          = 0x0100,
   
   .iManufacturer      = 0x01,
