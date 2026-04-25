@@ -1,4 +1,4 @@
-// Portions of this project are derived from Project X
+// Portions of this project are derived from
 // Copyright (c) 2025 Nicolai Electronics
 
 
@@ -130,7 +130,7 @@ rvswd_result_t ch32v20x_halt_microprocessor(rvswd_handle_t* handle) {
         }
         timeout--;
     }
-    printf("timeout_after = %d\n", timeout);
+    printf("timeout_after = %d\n", timeout); // costs a significant amout of time for some reason
     
 
     rvswd_pio_write(handle, CH32_REG_DEBUG_DMCONTROL, 0x00000001);  // Clear the halt request
@@ -224,15 +224,7 @@ bool ch32v20x_read_cpu_reg(rvswd_handle_t* handle, uint16_t regno, uint32_t* val
 int main()
 {
     stdio_init_all();
-    printf("fuck WCH\n");
     timer_hw->dbgpause = 0;
-    rvswd_handle_t wch_handle_type0 = {.swclk = 7, .swdio = 8};
-
-    gpio_init(PULL_HELPER_PIN);
-    gpio_set_function(PULL_HELPER_PIN, GPIO_FUNC_SIO);
-    gpio_set_dir(PULL_HELPER_PIN, GPIO_OUT);
-    gpio_put(PULL_HELPER_PIN, 1);
-
     gpio_init(LOGIC_ANALYZER_HELPER_PIN);
     gpio_set_function(LOGIC_ANALYZER_HELPER_PIN, GPIO_FUNC_SIO);
     gpio_set_dir(LOGIC_ANALYZER_HELPER_PIN, GPIO_OUT);
@@ -262,11 +254,8 @@ int main()
     busy_wait_ms(500);
 
     ch32v20x_halt_microprocessor(&wch_handle_pio);
-    //ch32v20x_resume_microprocessor(&wch_handle_pio);
     ch32v20x_resume_microprocessor(&wch_handle_pio);
     
-    //wch_power_on_reset_halt(&wch_handle_pio);
-    //wch_test_robust_halt_and_read(&wch_handle_pio);
     xTaskCreate(USB_Task, "USB_Task", 4096, NULL, 3, &xHandleTinyUSB);
 
     xTaskCreate(ddmi_worker_task, "DDMI worker", 512, NULL, 4, &xHandleDDMI);

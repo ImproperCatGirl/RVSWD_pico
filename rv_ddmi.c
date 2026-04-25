@@ -190,7 +190,7 @@ void ddmi_process_with_chain() {
                         in_reset_halt = true;
                     }
                 }
-                // 3. Detect "ACKHAVERESET" (The end of deassert_reset)
+                // Detect "ACKHAVERESET" (The end of deassert_reset)
                 if (data & DM_ACKHAVERESET) {
                     printf("ACK-ing\n");
                     in_reset_polling_phase = false;
@@ -201,7 +201,7 @@ void ddmi_process_with_chain() {
             if(in_reset_halt)
             {
                 rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
-                vTaskDelay(pdMS_TO_TICKS(10));
+                vTaskDelay(pdMS_TO_TICKS(10)); // For some reaosn the halting of the chip is really slow. 
             }
             
             //printf("%08X write %08X stat = %d\n", addr, data, stat);
