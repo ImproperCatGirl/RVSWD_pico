@@ -115,7 +115,7 @@ rvswd_result_t ch32v20x_halt_microprocessor(rvswd_handle_t* handle) {
 
 // Get the debug module status information, check rdata[9:8], if the value is 0b11,
     // it means the processor enters the halt state normally. Otherwise try again.
-    int timeout = 100;
+    int timeout = 1000;
     printf("timeout_init = %d\n", timeout);
     while (1) {
         uint32_t value;
@@ -146,7 +146,7 @@ rvswd_result_t ch32v20x_resume_microprocessor(rvswd_handle_t* handle) {
 
     // Get the debug module status information, check rdata[17:16],
     // if the value is 0b11, it means the processor has recovered.
-    uint8_t timeout = 5;
+    int timeout = 1000;
     while (1) {
         uint32_t value;
         rvswd_pio_read(handle, CH32_REG_DEBUG_DMSTATUS, &value);

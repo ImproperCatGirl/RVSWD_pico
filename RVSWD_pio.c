@@ -104,12 +104,16 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 
     gpio_init(handle->swclk);
     gpio_set_function(handle->swclk, GPIO_FUNC_PIO0);
+
+    gpio_set_drive_strength(handle->swclk, GPIO_DRIVE_STRENGTH_2MA);
     //gpio_set_dir(handle->swclk, GPIO_OUT);
     
 
     gpio_set_function(handle->swdio, GPIO_FUNC_PIO0);
     gpio_set_pulls(handle->swdio, true, false);       // Internal pull-up (~50kΩ)
     //gpio_set_dir(handle->swdio, GPIO_IN); //Hi-Z at init
+
+    gpio_set_drive_strength(handle->swdio, GPIO_DRIVE_STRENGTH_2MA);
 
     // 1. Claim PIO resources
     handle->pio = pio0; // Or pio1
@@ -128,7 +132,7 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
 
     // Clock divider (e.g., 125MHz / 10MHz = 12.5)
     float pio_clk_div = (float)clock_get_hz(clk_sys) / PIO_CLK_HZ;
-    pio_clk_div=50;
+    pio_clk_div=10;
     sm_config_set_clkdiv(&c, pio_clk_div);
 
     // FIFO configuration
@@ -180,7 +184,7 @@ rvswd_result_t inline rvswd_pio_stop(rvswd_handle_t* handle) {
 }
  
 rvswd_result_t rvswd_pio_reset(rvswd_handle_t* handle) {
-    rvswd_send_cmd(handle, rvswd_io_offset_reset, 110, true);
+    rvswd_send_cmd(handle, rvswd_io_offset_reset, 300, true);
     return RVSWD_OK;
 }
  

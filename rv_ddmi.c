@@ -152,6 +152,11 @@ void ddmi_process_with_chain() {
         if (cmd[0] == 'r') {
             uint32_t val;
             int stat = rvswd_pio_read(&wch_handle_pio, addr, &val);
+            int timeout = 5;
+            while(stat != RVSWD_OK && timeout-- > 0)
+            {
+                stat = rvswd_pio_read(&wch_handle_pio, addr, &val);
+            }
             if (addr == RISCV_REG_DMSTATUS) {
                 if (in_reset_polling_phase) {
                     /* * OpenOCD is in the while(1) loop in deassert_reset.
@@ -166,7 +171,7 @@ void ddmi_process_with_chain() {
                 }
             }
             // Abstractauto masking (keep this for stability)
-            if (addr == RISCV_REG_ABSTRACTAUTO) val = 0;
+            //if (addr == RISCV_REG_ABSTRACTAUTO) val = 0;
             response_pool[total_responses_queued++] = val;
             //printf("%08X read result = %08X, stat = %d\n", addr, val, stat);
     
@@ -198,9 +203,14 @@ void ddmi_process_with_chain() {
                 }
             }
             int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+            int timeout = 5;
+            while(stat != RVSWD_OK && timeout-- > 0)
+            {
+                stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+            }
             if(in_reset_halt)
             {
-                rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
+                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
                 vTaskDelay(pdMS_TO_TICKS(10)); // For some reaosn the halting of the chip is really slow. 
             }
             
