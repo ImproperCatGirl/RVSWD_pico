@@ -99,12 +99,15 @@
  
  //------------- CLASS -------------//
  #define CFG_TUD_HID               0
- #define CFG_TUD_CDC               0
+ #define CFG_TUD_CDC               1
  #define CFG_TUD_MSC               0
  #define CFG_TUD_MIDI              0
  #define CFG_TUD_VENDOR            1
  
 #define CFG_TUD_VENDOR_EP_BUFSIZE    64
+
+#define CFG_TUD_CDC_RX_BUFSIZE 64
+#define CFG_TUD_CDC_TX_BUFSIZE 64
 
 #define CFG_TUD_VENDOR_RX_BUFSIZE   1100 // RX buffer size (for receiving larger payloads)
 #define CFG_TUD_VENDOR_TX_BUFSIZE   1100  // TX buffer size (for sending larger payloads; increase for chunking large responses)

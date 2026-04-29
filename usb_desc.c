@@ -24,32 +24,13 @@
  */
 
  #include "common/tusb_types.h"
+#include "device/usbd.h"
 #include "tusb.h"
  #include "usb_desc.h"
  
  //--------------------------------------------------------------------+
  // Device Descriptors
  //--------------------------------------------------------------------+
- tusb_desc_device_t const desc_device_ =
- {
-     .bLength            = sizeof(tusb_desc_device_t),
-     .bDescriptorType    = TUSB_DESC_DEVICE,
-     .bcdUSB             = 0x0200, // USB 2.0
-     .bDeviceClass       = TUSB_CLASS_VENDOR_SPECIFIC,
-     .bDeviceSubClass    = 0x00,
-     .bDeviceProtocol    = 0x00,
-     .bMaxPacketSize0    = CFG_TUD_ENDPOINT0_SIZE,
- 
-     .idVendor           = 0xCAFE, // Custom VID
-     .idProduct          = 0x4008, // Custom PID
-     .bcdDevice          = 0x0100,
- 
-     .iManufacturer      = 0x01,
-     .iProduct           = 0x02,
-     .iSerialNumber      = 0x03,
- 
-     .bNumConfigurations = 0x01
- };
  tusb_desc_device_t const desc_device = {
   .bLength            = sizeof(tusb_desc_device_t),
   .bDescriptorType    = TUSB_DESC_DEVICE,
@@ -84,10 +65,11 @@
  enum
  {
    ITF_NUM_VENDOR,
+   ITF_NUM_CDC,
    ITF_NUM_TOTAL
  };
  
- #define CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_VENDOR_DESC_LEN)
+ #define CONFIG_TOTAL_LEN  (TUD_CONFIG_DESC_LEN + TUD_VENDOR_DESC_LEN + TUD_CDC_DESC_LEN)
  
  uint8_t const desc_configuration[] =
  {
@@ -95,7 +77,10 @@
    TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_SELF_POWERED, 100),
  
    // Interface number, string index, EP Out & IN address, EP size
-   TUD_VENDOR_DESCRIPTOR(ITF_NUM_VENDOR, 0, EPNUM_OUT, EPNUM_IN, 64)
+   TUD_VENDOR_DESCRIPTOR(ITF_NUM_VENDOR, 0, EPNUM_OUT, EPNUM_IN, 64),
+
+
+   TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 1, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64)
  };
  
  // Invoked when received GET CONFIGURATION DESCRIPTOR
