@@ -16,6 +16,9 @@
 
 #include "misc.h"
 
+
+#include "SWIO.h"
+
 enum  {
     BLINK_NOT_MOUNTED = 250,
     BLINK_MOUNTED = 1000,
@@ -25,8 +28,7 @@ enum  {
   static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
   
  
- 
- 
+ protocol_state state;
  
  #define RX_BUF_SIZE 1024
  #define TX_BUF_SIZE 1024
@@ -132,14 +134,22 @@ void ddmi_process_with_chain() {
 
     if(op_count == 255 && pkt[2] == 'R')
     {
-        rvswd_pio_reset(&wch_handle_pio);
-
-        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x80000001);  // Make the debug module work properly
+        if(state == TYPE_RVSWD)
+        {
+            rvswd_pio_reset(&wch_handle_pio);
+            ch32v20x_halt_microprocessor(&wch_handle_pio);
+            ch32v20x_resume_microprocessor(&wch_handle_pio);
+        }
+        if(state == TYPE_SWIO)
+        {
+            SWIO_re_open();
+        }
+        //SWIO_reset(15);
+        /*rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x80000001);  // Make the debug module work properly
         rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x80000001);  // Initiate a halt request
         rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x00000001);  // Clear the halt request
         rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x00000003);  // Initiate a core reset request
-        ch32v20x_halt_microprocessor(&wch_handle_pio);
-        ch32v20x_resume_microprocessor(&wch_handle_pio);
+        */
         return;
     }   
 
@@ -151,12 +161,20 @@ void ddmi_process_with_chain() {
     
         if (cmd[0] == 'r') {
             uint32_t val;
-            int stat = rvswd_pio_read(&wch_handle_pio, addr, &val);
-            int timeout = 5;
-            while(stat != RVSWD_OK && timeout-- > 0)
+            if(state == TYPE_RVSWD)
             {
-                stat = rvswd_pio_read(&wch_handle_pio, addr, &val);
+                int stat = rvswd_pio_read(&wch_handle_pio, addr, &val);
+                int timeout = 5;
+                while(stat != RVSWD_OK && timeout-- > 0)
+                {
+                    stat = rvswd_pio_read(&wch_handle_pio, addr, &val);
+                }
             }
+            if(state == TYPE_SWIO)
+            {
+                val = get_data(addr);
+            }
+            
             if (addr == RISCV_REG_DMSTATUS) {
                 if (in_reset_polling_phase) {
                     /* * OpenOCD is in the while(1) loop in deassert_reset.
@@ -181,7 +199,7 @@ void ddmi_process_with_chain() {
             if (addr == RISCV_REG_DMCONTROL) {
                 // OpenOCD tries to probe 1024 harts because WCH implements 
                 // all hartsel bits. Force all hartsel bits to 0 (Hart 0).
-                data &= ~DM_HARTSEL_MASK; 
+                ///data &= ~DM_HARTSEL_MASK; 
             }
 
             if(addr == RISCV_REG_DMCONTROL)
@@ -202,12 +220,20 @@ void ddmi_process_with_chain() {
                     in_reset_halt = false;
                 }
             }
-            int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
-            int timeout = 5;
-            while(stat != RVSWD_OK && timeout-- > 0)
+            if(state == TYPE_RVSWD)
             {
-                stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+                int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+                int timeout = 5;
+                while(stat != RVSWD_OK && timeout-- > 0)
+                {
+                    stat = rvswd_pio_write(&wch_handle_pio, addr, data);
+                }
             }
+            if(state == TYPE_SWIO)
+            {
+                put_data(addr,data);
+            }
+            
             if(in_reset_halt)
             {
                 //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request

@@ -26,6 +26,12 @@
     RVSWD_RESET,
 } rvswd_opcode_t;
 
+
+typedef enum {
+    TYPE_RVSWD,
+    TYPE_SWIO
+ } protocol_state;
+
 typedef struct {
     uint8_t serial;
     rvswd_opcode_t opcode;

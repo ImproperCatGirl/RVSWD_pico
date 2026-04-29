@@ -27,7 +27,9 @@
 #include "tusb_config.h"
 
 #include "host_comms.h"
+#include "cdc_uart.h"
 
+#include "SWIO.h"
 
 #define CH32_REG_DEBUG_DATA0        0x04  // Data register 0, can be used for temporary storage of data
 #define CH32_REG_DEBUG_DATA1        0x05  // Data register 1, can be used for temporary storage of data
@@ -71,6 +73,8 @@ rvswd_handle_t wch_handle_pio;
 TaskHandle_t xHandleTinyUSB = NULL;
 
 TaskHandle_t xHandleDDMI = NULL;
+
+extern TaskHandle_t uart_taskhandle;
 
 extern uint8_t cmd_len;
 
@@ -220,6 +224,8 @@ bool ch32v20x_read_cpu_reg(rvswd_handle_t* handle, uint16_t regno, uint32_t* val
     return true;
 }
 
+extern protocol_state state;
+
 
 int main()
 {
@@ -229,7 +235,7 @@ int main()
     gpio_set_function(LOGIC_ANALYZER_HELPER_PIN, GPIO_FUNC_SIO);
     gpio_set_dir(LOGIC_ANALYZER_HELPER_PIN, GPIO_OUT);
     gpio_put(LOGIC_ANALYZER_HELPER_PIN, 0);
-
+    cdc_uart_init();
     printf("PIO mode test\n\n\n\n\n\n\n\n\n\n");
     wch_handle_pio.swclk = 7;
     wch_handle_pio.swdio = 8;
@@ -253,12 +259,26 @@ int main()
     #endif
     busy_wait_ms(500);
 
+    //test();
+    SWIO_reset(15);
+
+    uint32_t test_data = get_data(0x11);
+    if(test_data != 0xFFFFFFFF && test_data != 0x0)
+    {
+        state = TYPE_SWIO;
+    }
+    else 
+    {
+        state = TYPE_RVSWD;
+    }
     ch32v20x_halt_microprocessor(&wch_handle_pio);
     ch32v20x_resume_microprocessor(&wch_handle_pio);
     
     xTaskCreate(USB_Task, "USB_Task", 4096, NULL, 3, &xHandleTinyUSB);
 
     xTaskCreate(ddmi_worker_task, "DDMI worker", 512, NULL, 4, &xHandleDDMI);
+
+    xTaskCreate(cdc_thread, "UART", configMINIMAL_STACK_SIZE, NULL, 2, &uart_taskhandle);
 
     vTaskStartScheduler();
 

@@ -96,15 +96,16 @@ target_link_libraries(tinyusb_upstream
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(RVSWD_pico RVSWD_pico.c  RVSWD_bitbang_CPU.c RVSWD_pio.c
-usb_desc.c  rv_ddmi.c)
+usb_desc.c  rv_ddmi.c cdc_uart.c SWIO.c)
 
 pico_set_program_name(RVSWD_pico "RVSWD_pico")
 pico_set_program_version(RVSWD_pico "0.1")
 
 # Generate PIO header
 pico_generate_pio_header(RVSWD_pico ${CMAKE_CURRENT_LIST_DIR}/blink.pio
-    ${CMAKE_CURRENT_LIST_DIR}/RVSWD_full.pio
+    ${CMAKE_CURRENT_LIST_DIR}/RVSWD_full.pio ${CMAKE_CURRENT_LIST_DIR}/SWIO.pio 
 )
+
 
 
 

@@ -106,6 +106,8 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
     gpio_set_function(handle->swclk, GPIO_FUNC_PIO0);
 
     gpio_set_drive_strength(handle->swclk, GPIO_DRIVE_STRENGTH_2MA);
+
+    gpio_set_slew_rate(handle->swclk, GPIO_SLEW_RATE_SLOW);
     //gpio_set_dir(handle->swclk, GPIO_OUT);
     
 
@@ -114,6 +116,8 @@ rvswd_result_t rvswd_pio_init(rvswd_handle_t* handle) {
     //gpio_set_dir(handle->swdio, GPIO_IN); //Hi-Z at init
 
     gpio_set_drive_strength(handle->swdio, GPIO_DRIVE_STRENGTH_2MA);
+
+    gpio_set_slew_rate(handle->swdio, GPIO_SLEW_RATE_SLOW);
 
     // 1. Claim PIO resources
     handle->pio = pio0; // Or pio1
@@ -278,4 +282,168 @@ rvswd_result_t inline rvswd_pio_read(rvswd_handle_t* handle, uint8_t reg, uint32
     }
  
     return (data_parity == parity_read) ? RVSWD_OK : RVSWD_FAIL;
+}
+
+#include <stdint.h>
+
+/**
+ * @brief Calculate parity for the packet (usually ODD for Host in this format).
+ */
+static inline uint8_t rvswd_calc_parity(uint64_t val) {
+    val ^= val >> 32;
+    val ^= val >> 16;
+    val ^= val >> 8;
+    val ^= val >> 4;
+    val &= 0xf;
+    uint8_t even = (0x6996 >> val) & 1;
+    return !even; // ODD parity
+}
+
+/**
+ * @brief Write a 32-bit value to a debug register (MSB First).
+ */
+rvswd_result_t inline rvswd_pio_write_(rvswd_handle_t* handle, uint8_t reg, uint32_t value) {
+    uint8_t op = 2; // Write
+    
+    rvswd_pio_start(handle);
+    
+    // 1. Address (7 bits) - Send MSB of the 7-bit field first
+    rvswd_pio_write_bits(handle, (uint32_t)(reg & 0x7F), 7);
+    
+    // 2. Data (32 bits) - MSB first
+    rvswd_pio_write_bits(handle, value, 32);
+    
+    // 3. Operation (2 bits)
+    rvswd_pio_write_bits(handle, (uint32_t)(op & 0x03), 2);
+    
+    // 4. Parity (1 bit)
+    // Parity is calculated over the whole sequence
+    uint64_t full_packet = ((uint64_t)(reg & 0x7F) << 34) | ((uint64_t)value << 2) | (op & 0x03);
+    rvswd_pio_write_bits(handle, rvswd_calc_parity(full_packet), 1);
+    
+    rvswd_pio_stop(handle);
+    return RVSWD_OK;
+}
+
+// Helper: Standard bit-counting parity (returns 1 if number of bits is odd)
+static inline uint8_t calc_parity_bit(uint64_t val) {
+    val ^= val >> 32;
+    val ^= val >> 16;
+    val ^= val >> 8;
+    val ^= val >> 4;
+    val &= 0xf;
+    return (0x6996 >> val) & 1;
+}
+void rvswd_auto_fuzz_read(rvswd_handle_t* handle, uint8_t test_reg) {
+    printf("Starting RVSWD Auto-Fuzz on Register 0x%02X...\n", test_reg);
+    printf("------------------------------------------------------------\n");
+    printf("MSB | H-Par | T-Par | OP | Result\n");
+    printf("------------------------------------------------------------\n");
+
+    for (int msb = 1; msb >= 0; msb--) {              // Try MSB first, then LSB
+        for (int h_parity = 0; h_parity <= 1; h_parity++) { // 0=Even, 1=Odd
+            for (int t_parity = 0; t_parity <= 1; t_parity++) { // 0=Even, 1=Odd
+                for (int op = 0; op <= 3; op++) {    // Try all opcodes 0-3
+                    
+                    uint32_t rx_data = 0;
+                    uint64_t payload = 0;
+                    
+                    // 1. Construct Host Request
+                    if (msb) {
+                        payload = ((uint64_t)(test_reg & 0x7F) << 34) | (uint64_t)(op & 0x03);
+                    } else {
+                        payload = (test_reg & 0x7F) | ((uint64_t)(op & 0x03) << 39);
+                    }
+
+                    uint8_t p_bit = calc_parity_bit(payload);
+                    if (h_parity) p_bit = !p_bit; // Apply Odd if requested
+
+                    // 2. Execute Hardware Transaction
+                    rvswd_pio_start(handle);
+                    
+                    if (msb) {
+                        rvswd_pio_write_bits(handle, (uint32_t)(payload >> 9), 32); 
+                        rvswd_pio_write_bits(handle, (uint32_t)(payload & 0x1FF), 9);
+                    } else {
+                        rvswd_pio_write_bits(handle, (uint32_t)payload, 32);
+                        rvswd_pio_write_bits(handle, (uint32_t)(payload >> 32), 9);
+                    }
+                    rvswd_pio_write_bits(handle, p_bit, 1);
+
+                    // 3. Capture Response
+                    uint8_t  rx_addr   = (uint8_t)rvswd_pio_read_bits(handle, 7);
+                    uint32_t data      = rvswd_pio_read_bits(handle, 32);
+                    uint8_t  rx_status = (uint8_t)rvswd_pio_read_bits(handle, 2);
+                    uint8_t  rx_parity = (uint8_t)rvswd_pio_read_bits(handle, 1);
+                    
+                    rvswd_pio_stop(handle);
+
+                    // 4. Verify Target Parity
+                    uint64_t rx_payload;
+                    if (msb) {
+                        rx_payload = ((uint64_t)rx_addr << 34) | ((uint64_t)data << 2) | rx_status;
+                    } else {
+                        rx_payload = rx_addr | ((uint64_t)data << 7) | ((uint64_t)rx_status << 39);
+                    }
+                    
+                    uint8_t check = calc_parity_bit(rx_payload);
+                    if (t_parity) check = !check;
+
+                    // 5. Print Results
+                    printf(" %d  |   %s   |   %s   |  %d | ", 
+                           msb, h_parity ? "ODD" : "EVN", t_parity ? "ODD" : "EVN", op);
+
+                    if (check != rx_parity) {
+                        printf("FAIL: Parity Error (Got %d, Calc %d)\n", rx_parity, check);
+                    } else if (rx_status != 0) {
+                        printf("FAIL: Status %d (Busy/Err) Data: 0x%08X\n", rx_status, data);
+                    } else if (data == 0x00000000 || data == 0xFFFFFFFF) {
+                        printf("WARN: Valid Parity, but Data is 0x%08X (Bus Floating?)\n", data);
+                    } else {
+                        printf("SUCCESS! Data: 0x%08X\n", data);
+                    }
+                }
+            }
+        }
+    }
+    printf("------------------------------------------------------------\n");
+}
+/**
+ * @brief Read a 32-bit value from a debug register (MSB First).
+ */
+rvswd_result_t inline rvswd_pio_read_(rvswd_handle_t* handle, uint8_t reg, uint32_t* value) {
+    /*uint8_t op = 1; // Read
+    
+    rvswd_pio_start(handle);
+    
+    // --- Host Phase ---
+    rvswd_pio_write_bits(handle, (uint32_t)(reg & 0x7F), 7);
+    rvswd_pio_write_bits(handle, 0, 32); // Dummy data
+    rvswd_pio_write_bits(handle, (uint32_t)(op & 0x03), 2);
+    
+    uint64_t host_packet = ((uint64_t)(reg & 0x7F) << 34) | (op & 0x03);
+    rvswd_pio_write_bits(handle, rvswd_calc_parity(host_packet), 1);
+
+    // --- Target Phase (PIO goes High-Z automatically) ---
+    uint8_t  rx_addr   = (uint8_t)rvswd_pio_read_bits(handle, 7);
+    uint32_t rx_data   = rvswd_pio_read_bits(handle, 32);
+    uint8_t  rx_status = (uint8_t)rvswd_pio_read_bits(handle, 2);
+    uint8_t  rx_parity = (uint8_t)rvswd_pio_read_bits(handle, 1);
+    
+    rvswd_pio_stop(handle);
+
+    // Verify Target Parity (Target usually uses even parity in MSB mode)
+    uint64_t rx_payload = ((uint64_t)rx_addr << 34) | ((uint64_t)rx_data << 2) | (rx_status);
+    printf("%08X %08X %08X %02X\n", rx_addr, rx_data, rx_status, rx_parity);
+    if (!rvswd_calc_parity(rx_payload) != rx_parity) {
+        return RVSWD_PARITY_ERROR;
+    }
+
+    if (rx_status != 0) return RVSWD_FAIL;
+
+    *value = rx_data;
+    uint64_t data_rcvd = rvswd_pio_read_bits(handle, 64);
+    printf("%16llX\n", data_rcvd);*/
+    rvswd_auto_fuzz_read(handle, reg);
+    return RVSWD_OK;
 }
