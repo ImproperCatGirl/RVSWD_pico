@@ -135,40 +135,10 @@ void ddmi_process_with_chain() {
                 val = get_data(addr);
             }
             
-            if (addr == RISCV_REG_DMSTATUS) {
-                if (in_reset_polling_phase) {
-                    /*
-                     * During OpenOCD deassert_reset polling, force the reset
-                     * and halted bits it expects before it sends ACKHAVERESET.
-                     */
-                    RVSWD_LOG("OpenOCD reset polling phase\n");
-                    val |= (DS_ALLHAVERESET | DS_ANYHAVERESET |
-                            DS_ALLHALTED    | DS_ANYHALTED);
-
-                }
-            }
             response_pool[total_responses_queued++] = val;
     
         } else 
         { // WRITE
-            if(addr == RISCV_REG_DMCONTROL)
-            {
-                if (data & DM_NDMRESET) {
-                    RVSWD_LOG("OpenOCD requested ndmreset\n");
-                    in_reset_polling_phase = true;
-                    if(data & DM_HALTREQ)
-                    {
-                        RVSWD_LOG("OpenOCD requested reset-halt\n");
-                        in_reset_halt = true;
-                    }
-                }
-                // Detect "ACKHAVERESET" (The end of deassert_reset)
-                if (data & DM_ACKHAVERESET) {
-                    RVSWD_LOG("OpenOCD acknowledged reset\n");
-                    in_reset_polling_phase = false;
-                    in_reset_halt = false;
-                }
-            }
             if(state == TYPE_RVSWD)
             {
                 int stat = rvswd_pio_write(&wch_handle_pio, addr, data);
@@ -182,12 +152,6 @@ void ddmi_process_with_chain() {
             {
                 put_data(addr,data);
             }
-            
-            if(in_reset_halt)
-            {
-                vTaskDelay(pdMS_TO_TICKS(10));
-            }
-            
             response_pool[total_responses_queued++] = 0x00000000;
         }
     }
