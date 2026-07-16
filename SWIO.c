@@ -7,6 +7,8 @@
 #include <hardware/timer.h>
 #include <stdio.h>
 
+#include "board_config.h"
+
 //#define DUMP_COMMANDS
 
 __attribute__((noinline)) void busy_wait(int count) {
@@ -21,8 +23,6 @@ static const int WCH_DM_SHDWCFGR = 0x7E;
 static const int WCH_DM_PART     = 0x7F; // not in doc but appears to be part info
 
 
-#define PIN 15
-#define PULL_PIN 14
 //------------------------------------------------------------------------------
 uint sm  = 0;
 
@@ -43,20 +43,20 @@ uint32_t get_data(uint32_t addr) {
     pio_sm_put_blocking(pio1, sm, ~data);
   }
 void SWIO_reset(int pin) {
-    pin = PIN;
+    pin = SWIO_DATA_PIN;
   // Configure GPIO
   gpio_set_drive_strength(pin, GPIO_DRIVE_STRENGTH_2MA);
   gpio_set_slew_rate     (pin, GPIO_SLEW_RATE_SLOW);
   gpio_set_function      (pin, GPIO_FUNC_PIO1);
 
 
-  gpio_init(PULL_PIN);
-  gpio_set_function(PULL_PIN, GPIO_FUNC_SIO);
-  gpio_set_dir(PULL_PIN, GPIO_OUT);
+  gpio_init(SWIO_PULL_PIN);
+  gpio_set_function(SWIO_PULL_PIN, GPIO_FUNC_SIO);
+  gpio_set_dir(SWIO_PULL_PIN, GPIO_OUT);
 
-  gpio_set_drive_strength(PULL_PIN, GPIO_DRIVE_STRENGTH_12MA);
-  gpio_set_slew_rate     (PULL_PIN, GPIO_SLEW_RATE_FAST);
-  gpio_put(PULL_PIN, 1);
+  gpio_set_drive_strength(SWIO_PULL_PIN, GPIO_DRIVE_STRENGTH_12MA);
+  gpio_set_slew_rate     (SWIO_PULL_PIN, GPIO_SLEW_RATE_FAST);
+  gpio_put(SWIO_PULL_PIN, 1);
 
   // Reset PIO module
   pio1->ctrl = 0b000100010001;
@@ -113,22 +113,5 @@ void SWIO_re_open()
     // Reset debug module on target
     put_data(0x10, 0x00000000);
     put_data(0x10, 0x00000001);
-
-}
-//------------------------------------------------------------------------------
-
-
-
-void test()
-{
-    SWIO_reset(PIN);
-    while(1)
-    {
-        for(int i = 0; i < 0xFF; i++)
-        {
-            get_data(i);
-        }
-
-    }
 
 }

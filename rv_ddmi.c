@@ -1,41 +1,22 @@
 
 #include <hardware/timer.h>
-#include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
 
-#include "class/vendor/vendor_device.h"
-#include "portmacro.h"
-#include "projdefs.h"
 #include "rvswd.h"
 #include "tusb.h"
 
 #include "FreeRTOS.h"
-#include "queue.h"
 #include "task.h"
 
+#include "debug_log.h"
 #include "misc.h"
 
 
 #include "SWIO.h"
-
-enum  {
-    BLINK_NOT_MOUNTED = 250,
-    BLINK_MOUNTED = 1000,
-    BLINK_SUSPENDED = 2500,
-  };
-  
-  static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
   
  
  protocol_state state;
- 
- #define RX_BUF_SIZE 1024
- #define TX_BUF_SIZE 1024
- static uint8_t rx_buf[RX_BUF_SIZE];
- static uint8_t tx_buf[TX_BUF_SIZE];
- 
- static size_t rx_len = 0;
  
   //--------------------------------------------------------------------+
   // Device callbacks
@@ -44,13 +25,11 @@ enum  {
   // Invoked when device is mounted
   void tud_mount_cb(void)
   {
-    blink_interval_ms = BLINK_MOUNTED;
   }
   
   // Invoked when device is unmounted
   void tud_umount_cb(void)
   {
-    blink_interval_ms = BLINK_NOT_MOUNTED;
   }
   
   // Invoked when usb bus is suspended
@@ -59,13 +38,11 @@ enum  {
   void tud_suspend_cb(bool remote_wakeup_en)
   {
     (void) remote_wakeup_en;
-    //blink_interval_ms = BLINK_SUSPENDED;
   }
   
   // Invoked when usb bus is resumed
   void tud_resume_cb(void)
   {
-    blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
   }
   
  
@@ -89,24 +66,14 @@ void ddmi_worker_task(void *pvParameters)
     }
 }
 
-// Internal tracking for the reset state machine
-static enum {
-    IDLE,
-    RESET_SEQUENCE_TRIGGERED,
-    WAITING_FOR_OPENOCD_ACK
-} reset_state = IDLE;
-
 // RISC-V Debug Module Register Addresses
 #define RISCV_REG_DMCONTROL    0x10
 #define RISCV_REG_DMSTATUS     0x11
-#define RISCV_REG_ABSTRACTAUTO 0x18
 
 // DMCONTROL Bit Masks
-#define DM_DMACTIVE            (1 << 0)
 #define DM_NDMRESET            (1 << 1)
 #define DM_ACKHAVERESET        (1 << 28)
 #define DM_HALTREQ             (1 << 31)
-#define DM_HARTSEL_MASK        0x03FF0000
 
 // DMSTATUS Bit Masks
 #define DS_ALLHALTED           (1 << 9)
@@ -117,7 +84,6 @@ static enum {
 static bool in_reset_polling_phase = false;
 static bool in_reset_halt = false;
 
-static uint32_t pool_idx = 0;
 static uint32_t response_pool[100];
 static uint8_t  total_responses_queued = 0;
 #define USB_FS_MPS 64
@@ -144,12 +110,6 @@ void ddmi_process_with_chain() {
         {
             SWIO_re_open();
         }
-        //SWIO_reset(15);
-        /*rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x80000001);  // Make the debug module work properly
-        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x80000001);  // Initiate a halt request
-        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x00000001);  // Clear the halt request
-        rvswd_pio_write(&wch_handle_pio, RISCV_REG_DMCONTROL, 0x00000003);  // Initiate a core reset request
-        */
         return;
     }   
 
@@ -177,45 +137,34 @@ void ddmi_process_with_chain() {
             
             if (addr == RISCV_REG_DMSTATUS) {
                 if (in_reset_polling_phase) {
-                    /* * OpenOCD is in the while(1) loop in deassert_reset.
-                     * We must force ALLHAVERESET so it proceeds to ACK.
-                     * We also force HALTED bits because OpenOCD expects 
-                     * the hart to be halted post-reset (reset_halt=1).
+                    /*
+                     * During OpenOCD deassert_reset polling, force the reset
+                     * and halted bits it expects before it sends ACKHAVERESET.
                      */
-                     printf("OpenOCD is in the while(1) loop in deassert_reset.\n");
+                    RVSWD_LOG("OpenOCD reset polling phase\n");
                     val |= (DS_ALLHAVERESET | DS_ANYHAVERESET |
                             DS_ALLHALTED    | DS_ANYHALTED);
 
                 }
             }
-            // Abstractauto masking (keep this for stability)
-            //if (addr == RISCV_REG_ABSTRACTAUTO) val = 0;
             response_pool[total_responses_queued++] = val;
-            //printf("%08X read result = %08X, stat = %d\n", addr, val, stat);
     
         } else 
         { // WRITE
-            // --- WORKAROUND: DMCONTROL (0x10) Hartsel Masking ---
-            if (addr == RISCV_REG_DMCONTROL) {
-                // OpenOCD tries to probe 1024 harts because WCH implements 
-                // all hartsel bits. Force all hartsel bits to 0 (Hart 0).
-                ///data &= ~DM_HARTSEL_MASK; 
-            }
-
             if(addr == RISCV_REG_DMCONTROL)
             {
                 if (data & DM_NDMRESET) {
-                    printf("RESETTING!\n");
+                    RVSWD_LOG("OpenOCD requested ndmreset\n");
                     in_reset_polling_phase = true;
                     if(data & DM_HALTREQ)
                     {
-                        printf("Halt pending!\n");
+                        RVSWD_LOG("OpenOCD requested reset-halt\n");
                         in_reset_halt = true;
                     }
                 }
                 // Detect "ACKHAVERESET" (The end of deassert_reset)
                 if (data & DM_ACKHAVERESET) {
-                    printf("ACK-ing\n");
+                    RVSWD_LOG("OpenOCD acknowledged reset\n");
                     in_reset_polling_phase = false;
                     in_reset_halt = false;
                 }
@@ -236,11 +185,9 @@ void ddmi_process_with_chain() {
             
             if(in_reset_halt)
             {
-                //rvswd_write(&wch_handle_pio, RISCV_REG_DMCONTROL, DM_HALTREQ | DM_DMACTIVE);  // Initiate a halt request
-                vTaskDelay(pdMS_TO_TICKS(10)); // For some reaosn the halting of the chip is really slow. 
+                vTaskDelay(pdMS_TO_TICKS(10));
             }
             
-            //printf("%08X write %08X stat = %d\n", addr, data, stat);
             response_pool[total_responses_queued++] = 0x00000000;
         }
     }

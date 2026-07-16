@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2025 Nicolai Electronics
+ * RVSWD protocol implementation informed by:
+ * - https://github.com/aappleby/picorvd
+ * - https://github.com/Nicolai-Electronics/esp32-component-rvswd
  *
  * SPDX-License-Identifier: MIT
  */
-/**/
  #include "rvswd.h"
  #include <inttypes.h>
 #include <pico/time.h>

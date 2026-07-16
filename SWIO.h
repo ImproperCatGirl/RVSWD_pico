@@ -1,6 +1,7 @@
 
+#pragma once
+
 #include <stdint.h>
-void test();
 
 void SWIO_reset(int pin);
 

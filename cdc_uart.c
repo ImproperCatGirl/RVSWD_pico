@@ -28,6 +28,7 @@
  #include "FreeRTOS.h"
  #include "task.h"
  #include "tusb.h"
+ #include "board_config.h"
  
  
  TaskHandle_t uart_taskhandle;
@@ -52,16 +53,14 @@
  
  int baud = 0;
 
- #define PROBE_UART_TX 4
- #define PROBE_UART_RX 5
  #define PROBE_UART_INTERFACE uart1
  #define PROBE_UART_BAUDRATE 115200
  
  void cdc_uart_init(void) {
-     gpio_set_function(PROBE_UART_TX, GPIO_FUNC_UART);
-     gpio_set_function(PROBE_UART_RX, GPIO_FUNC_UART);
-     gpio_set_pulls(PROBE_UART_TX, 1, 0);
-     gpio_set_pulls(PROBE_UART_RX, 1, 0);
+     gpio_set_function(PROBE_UART_TX_PIN, GPIO_FUNC_UART);
+     gpio_set_function(PROBE_UART_RX_PIN, GPIO_FUNC_UART);
+     gpio_set_pulls(PROBE_UART_TX_PIN, 1, 0);
+     gpio_set_pulls(PROBE_UART_RX_PIN, 1, 0);
      uart_init(PROBE_UART_INTERFACE, PROBE_UART_BAUDRATE);
  
  #ifdef PROBE_UART_TX_LED

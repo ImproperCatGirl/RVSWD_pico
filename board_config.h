@@ -1,0 +1,11 @@
+#pragma once
+
+#define RVSWD_CLK_PIN 7
+#define RVSWD_DIO_PIN 8
+#define LOGIC_ANALYZER_HELPER_PIN 10
+
+#define SWIO_DATA_PIN 15
+#define SWIO_PULL_PIN 14
+
+#define PROBE_UART_TX_PIN 4
+#define PROBE_UART_RX_PIN 5

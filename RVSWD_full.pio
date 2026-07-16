@@ -4,6 +4,10 @@
 
 .define public BIT_DELAY 2
 
+; RVSWD protocol implementation informed by:
+; - https://github.com/aappleby/picorvd
+; - https://github.com/Nicolai-Electronics/esp32-component-rvswd
+
 ; --- Command Dispatcher (Entry Point) ---
 ; Waits here for a command from the CPU
 .wrap_target
