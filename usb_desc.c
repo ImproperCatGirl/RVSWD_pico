@@ -23,10 +23,12 @@
  *
  */
 
- #include "common/tusb_types.h"
+#include <string.h>
+
+#include "common/tusb_types.h"
 #include "device/usbd.h"
 #include "tusb.h"
- #include "usb_desc.h"
+#include "usb_desc.h"
  
  //--------------------------------------------------------------------+
  // Device Descriptors
@@ -66,6 +68,7 @@
  {
    ITF_NUM_VENDOR,
    ITF_NUM_CDC,
+   ITF_NUM_CDC_DATA,
    ITF_NUM_TOTAL
  };
  
@@ -80,6 +83,8 @@
    TUD_VENDOR_DESCRIPTOR(ITF_NUM_VENDOR, 0, EPNUM_OUT, EPNUM_IN, 64),
 
 
+   // TUD_CDC_DESCRIPTOR expands to a CDC control interface and the following
+   // CDC data interface, so ITF_NUM_TOTAL must include both.
    TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 1, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64)
  };
  
